@@ -159,6 +159,7 @@ Return<void> GnssCallback::gnssLocationCb(const GnssLocation& location)
 {
     if (hybris_gps_instance && hybris_gps_instance->location_cb){
         UHardwareGpsLocation *Ulocation = nullptr;
+        Ulocation->size = sizeof(UHardwareGpsLocation);
         Ulocation->flags = location.gnssLocationFlags;
         Ulocation->latitude = location.latitudeDegrees;
         Ulocation->longitude = location.longitudeDegrees;
@@ -209,8 +210,10 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
         int ephemeris_mask = 0;
         int almanac_mask = 0;
         int used_in_fix_mask = 0;
+        UsvStatus->size = sizeof(UHardwareGpsSvStatus);
         UsvStatus->num_svs = svStatus.numSvs;
         for (int i = 0; i < UsvStatus->num_svs; i++){
+            UsvStatus->sv_list[i].size = sizeof(UHardwareGpsSvInfo);
             int prn = svStatus.gnssSvList[i].svid;
             // From https://github.com/barbeau/gpstest
             // and https://github.com/mvglasow/satstat/wiki/NMEA-IDs
@@ -318,6 +321,7 @@ Return<void> AGnssCallback::agnssStatusIpV4Cb(
 {
     if (hybris_gps_instance && hybris_gps_instance->agps_status_cb){
         UHardwareGpsAGpsStatus *Uagps_status = nullptr;
+        Uagps_status->size = sizeof(UHardwareGpsAGpsStatus);
         switch (agps_status.type) {
             case IAGnssCallback::AGnssType::TYPE_SUPL:
                 Uagps_status->type = 1;
@@ -373,6 +377,7 @@ Return<void> GnssNiCallback::niNotifyCb(
 {
     if (hybris_gps_instance && hybris_gps_instance->gps_ni_notify_cb){
         UHardwareGpsNiNotification *Unotification = nullptr;
+        Unotification->size = sizeof(UHardwareGpsNiNotification);
         Unotification->notification_id = notification.notificationId;
         switch (notification.niType) {
             case IGnssNiCallback::GnssNiType::VOICE:
