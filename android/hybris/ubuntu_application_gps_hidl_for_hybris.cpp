@@ -206,6 +206,9 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
 {
     if (hybris_gps_instance && hybris_gps_instance->sv_status_cb){
         UHardwareGpsSvStatus *UsvStatus = nullptr;
+        int ephemeris_mask = 0;
+        int almanac_mask = 0;
+        int used_in_fix_mask = 0;
         UsvStatus->num_svs = svStatus.numSvs;
         for (int i = 0; i < UsvStatus->num_svs; i++){
             int prn = svStatus.gnssSvList[i].svid;
@@ -224,7 +227,16 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
             UsvStatus->sv_list[i].snr = svStatus.gnssSvList[i].cN0Dbhz;
             UsvStatus->sv_list[i].elevation = svStatus.gnssSvList[i].elevationDegrees;
             UsvStatus->sv_list[i].azimuth = svStatus.gnssSvList[i].azimuthDegrees;
+            if (svStatus.gnssSvList[i].svFlag & IGnssCallback::GnssSvFlags::HAS_EPHEMERIS_DATA)
+                ephemeris_mask |= 1 << i;
+            if (svStatus.gnssSvList[i].svFlag & IGnssCallback::GnssSvFlags::HAS_ALMANAC_DATA)
+                almanac_mask |= 1 << i;
+            if (svStatus.gnssSvList[i].svFlag & IGnssCallback::GnssSvFlags::USED_IN_FIX)
+                used_in_fix_mask |= 1 << i;
         }
+        UsvStatus->ephemeris_mask = ephemeris_mask;
+        UsvStatus->almanac_mask = almanac_mask;
+        UsvStatus->used_in_fix_mask = used_in_fix_mask;
         hybris_gps_instance->sv_status_cb(UsvStatus, hybris_gps_instance->context);
     }
     return Void();
