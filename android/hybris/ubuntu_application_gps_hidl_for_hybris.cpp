@@ -207,8 +207,20 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
     if (hybris_gps_instance && hybris_gps_instance->sv_status_cb){
         UHardwareGpsSvStatus *UsvStatus = nullptr;
         UsvStatus->num_svs = svStatus.numSvs;
-        for (int i = 0; i <= UsvStatus->num_svs; i++){
-            UsvStatus->sv_list[i].prn = svStatus.gnssSvList[i].svid;
+        for (int i = 0; i < UsvStatus->num_svs; i++){
+            int prn = svStatus.gnssSvList[i].svid;
+            // From https://github.com/barbeau/gpstest
+            // and https://github.com/mvglasow/satstat/wiki/NMEA-IDs
+            if (svStatus.gnssSvList[i].constellation == GnssConstellationType::SBAS) {
+                prn -= 87;
+            } else if (svStatus.gnssSvList[i].constellation == GnssConstellationType::GLONASS) {
+                prn += 64;
+            } else if (svStatus.gnssSvList[i].constellation == GnssConstellationType::BEIDOU) {
+                prn += 200;
+            } else if (svStatus.gnssSvList[i].constellation == GnssConstellationType::GALILEO) {
+                prn += 300;
+            }
+            UsvStatus->sv_list[i].prn = prn;
             UsvStatus->sv_list[i].snr = svStatus.gnssSvList[i].cN0Dbhz;
             UsvStatus->sv_list[i].elevation = svStatus.gnssSvList[i].elevationDegrees;
             UsvStatus->sv_list[i].azimuth = svStatus.gnssSvList[i].azimuthDegrees;
