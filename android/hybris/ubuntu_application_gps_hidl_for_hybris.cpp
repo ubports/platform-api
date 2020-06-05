@@ -678,11 +678,7 @@ bool UHardwareGps_::start()
 {
     if (gnssHal != nullptr) {
         auto result = gnssHal->start();
-        if (!result.isOk()) {
-            return false;
-        } else {
-            return result;
-        }
+        return result.isOk();
     } else {
         return false;
     }
@@ -692,11 +688,7 @@ bool UHardwareGps_::stop()
 {
     if (gnssHal != nullptr) {
         auto result = gnssHal->stop();
-        if (!result.isOk()) {
-            return false;
-        } else {
-            return result;
-        }
+        return result.isOk();
     } else {
         return false;
     }
