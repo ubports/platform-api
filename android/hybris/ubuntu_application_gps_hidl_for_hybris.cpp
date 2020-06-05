@@ -224,6 +224,7 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
             ALOGW("%s: Too many satellites %u. Clamps to %u.", __func__, UsvStatus.num_svs, U_HARDWARE_GPS_MAX_SVS);
             UsvStatus.num_svs = U_HARDWARE_GPS_MAX_SVS;
         }
+        ALOGI("%s: num_svs: %d", __func__, UsvStatus.num_svs);
         for (int i = 0; i < UsvStatus.num_svs; i++){
             UsvStatus.sv_list[i].size = sizeof(UHardwareGpsSvInfo);
             int prn = svStatus.gnssSvList[i].svid;
@@ -248,10 +249,12 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
                 almanac_mask |= 1 << i;
             if (svStatus.gnssSvList[i].svFlag & IGnssCallback::GnssSvFlags::USED_IN_FIX)
                 used_in_fix_mask |= 1 << i;
+            ALOGI("%s: prn: %d, snr: %f, elevation: %f, azimuth: %f", __func__, UsvStatus.sv_list[i].prn, UsvStatus.sv_list[i].snr, UsvStatus.sv_list[i].elevation, UsvStatus.sv_list[i].azimuth);
         }
         UsvStatus.ephemeris_mask = ephemeris_mask;
         UsvStatus.almanac_mask = almanac_mask;
         UsvStatus.used_in_fix_mask = used_in_fix_mask;
+        ALOGI("%s: ephemeris_mask: %d, almanac_mask: %d, used_in_fix_mask: %d", __func__, ephemeris_mask, almanac_mask, used_in_fix_mask);
         hybris_gps_instance->sv_status_cb(&UsvStatus, hybris_gps_instance->context);
     }
     return Void();
