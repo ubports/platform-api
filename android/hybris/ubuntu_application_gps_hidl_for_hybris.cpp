@@ -858,9 +858,6 @@ void UHardwareGps_::inject_xtra_data(char* data, int length)
 
 UHardwareGps u_hardware_gps_new(UHardwareGpsParams* params)
 {
-    if (hybris_gps_instance != NULL)
-        return NULL;
-
     UHardwareGps u_hardware_gps = new UHardwareGps_(params);
     hybris_gps_instance = u_hardware_gps;
 
