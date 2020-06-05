@@ -206,14 +206,15 @@ Return<void> GnssCallback::gnssStatusCb(const IGnssCallback::GnssStatusValue sta
 Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svStatus)
 {
     if (hybris_gps_instance && hybris_gps_instance->sv_status_cb){
-        UHardwareGpsSvStatus *UsvStatus = nullptr;
+        UHardwareGpsSvStatus UsvStatus;
+        memset(&UsvStatus, 0, sizeof(UHardwareGpsSvStatus));
         int ephemeris_mask = 0;
         int almanac_mask = 0;
         int used_in_fix_mask = 0;
-        UsvStatus->size = sizeof(UHardwareGpsSvStatus);
-        UsvStatus->num_svs = svStatus.numSvs;
-        for (int i = 0; i < UsvStatus->num_svs; i++){
-            UsvStatus->sv_list[i].size = sizeof(UHardwareGpsSvInfo);
+        UsvStatus.size = sizeof(UHardwareGpsSvStatus);
+        UsvStatus.num_svs = svStatus.numSvs;
+        for (int i = 0; i < UsvStatus.num_svs; i++){
+            UsvStatus.sv_list[i].size = sizeof(UHardwareGpsSvInfo);
             int prn = svStatus.gnssSvList[i].svid;
             // From https://github.com/barbeau/gpstest
             // and https://github.com/mvglasow/satstat/wiki/NMEA-IDs
@@ -226,10 +227,10 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
             } else if (svStatus.gnssSvList[i].constellation == GnssConstellationType::GALILEO) {
                 prn += 300;
             }
-            UsvStatus->sv_list[i].prn = prn;
-            UsvStatus->sv_list[i].snr = svStatus.gnssSvList[i].cN0Dbhz;
-            UsvStatus->sv_list[i].elevation = svStatus.gnssSvList[i].elevationDegrees;
-            UsvStatus->sv_list[i].azimuth = svStatus.gnssSvList[i].azimuthDegrees;
+            UsvStatus.sv_list[i].prn = prn;
+            UsvStatus.sv_list[i].snr = svStatus.gnssSvList[i].cN0Dbhz;
+            UsvStatus.sv_list[i].elevation = svStatus.gnssSvList[i].elevationDegrees;
+            UsvStatus.sv_list[i].azimuth = svStatus.gnssSvList[i].azimuthDegrees;
             if (svStatus.gnssSvList[i].svFlag & IGnssCallback::GnssSvFlags::HAS_EPHEMERIS_DATA)
                 ephemeris_mask |= 1 << i;
             if (svStatus.gnssSvList[i].svFlag & IGnssCallback::GnssSvFlags::HAS_ALMANAC_DATA)
@@ -237,10 +238,10 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
             if (svStatus.gnssSvList[i].svFlag & IGnssCallback::GnssSvFlags::USED_IN_FIX)
                 used_in_fix_mask |= 1 << i;
         }
-        UsvStatus->ephemeris_mask = ephemeris_mask;
-        UsvStatus->almanac_mask = almanac_mask;
-        UsvStatus->used_in_fix_mask = used_in_fix_mask;
-        hybris_gps_instance->sv_status_cb(UsvStatus, hybris_gps_instance->context);
+        UsvStatus.ephemeris_mask = ephemeris_mask;
+        UsvStatus.almanac_mask = almanac_mask;
+        UsvStatus.used_in_fix_mask = used_in_fix_mask;
+        hybris_gps_instance->sv_status_cb(&UsvStatus, hybris_gps_instance->context);
     }
     return Void();
 }
@@ -320,42 +321,43 @@ Return<void> AGnssCallback::agnssStatusIpV4Cb(
         const IAGnssCallback::AGnssStatusIpV4& agps_status)
 {
     if (hybris_gps_instance && hybris_gps_instance->agps_status_cb){
-        UHardwareGpsAGpsStatus *Uagps_status = nullptr;
-        Uagps_status->size = sizeof(UHardwareGpsAGpsStatus);
+        UHardwareGpsAGpsStatus Uagps_status;
+        memset(&Uagps_status, 0, sizeof(UHardwareGpsAGpsStatus));
+        Uagps_status.size = sizeof(UHardwareGpsAGpsStatus);
         switch (agps_status.type) {
             case IAGnssCallback::AGnssType::TYPE_SUPL:
-                Uagps_status->type = 1;
+                Uagps_status.type = 1;
                 break;
             case IAGnssCallback::AGnssType::TYPE_C2K:
-                Uagps_status->type = 2;
+                Uagps_status.type = 2;
                 break;
             default:
-                Uagps_status->type = 1;
+                Uagps_status.type = 1;
                 break;
         }
         switch (agps_status.status) {
             case IAGnssCallback::AGnssStatusValue::REQUEST_AGNSS_DATA_CONN:
-                Uagps_status->status = 1;
+                Uagps_status.status = 1;
                 break;
             case IAGnssCallback::AGnssStatusValue::RELEASE_AGNSS_DATA_CONN:
-                Uagps_status->status = 2;
+                Uagps_status.status = 2;
                 break;
             case IAGnssCallback::AGnssStatusValue::AGNSS_DATA_CONNECTED:
-                Uagps_status->status = 3;
+                Uagps_status.status = 3;
                 break;
             case IAGnssCallback::AGnssStatusValue::AGNSS_DATA_CONN_DONE:
-                Uagps_status->status = 4;
+                Uagps_status.status = 4;
                 break;
             case IAGnssCallback::AGnssStatusValue::AGNSS_DATA_CONN_FAILED:
-                Uagps_status->status = 5;
+                Uagps_status.status = 5;
                 break;
             default:
-                Uagps_status->status = 5;
+                Uagps_status.status = 5;
                 break;
         }
-        Uagps_status->ipaddr = agps_status.ipV4Addr;
+        Uagps_status.ipaddr = agps_status.ipV4Addr;
 
-        hybris_gps_instance->agps_status_cb(Uagps_status, hybris_gps_instance->context);
+        hybris_gps_instance->agps_status_cb(&Uagps_status, hybris_gps_instance->context);
     }
     return Void();
 }
@@ -376,85 +378,86 @@ Return<void> GnssNiCallback::niNotifyCb(
         const IGnssNiCallback::GnssNiNotification& notification)
 {
     if (hybris_gps_instance && hybris_gps_instance->gps_ni_notify_cb){
-        UHardwareGpsNiNotification *Unotification = nullptr;
-        Unotification->size = sizeof(UHardwareGpsNiNotification);
-        Unotification->notification_id = notification.notificationId;
+        UHardwareGpsNiNotification Unotification;
+        memset(&Unotification, 0, sizeof(UHardwareGpsNiNotification));
+        Unotification.size = sizeof(UHardwareGpsNiNotification);
+        Unotification.notification_id = notification.notificationId;
         switch (notification.niType) {
             case IGnssNiCallback::GnssNiType::VOICE:
-                Unotification->ni_type = 1;
+                Unotification.ni_type = 1;
                 break;
             case IGnssNiCallback::GnssNiType::UMTS_SUPL:
-                Unotification->ni_type = 2;
+                Unotification.ni_type = 2;
                 break;
             case IGnssNiCallback::GnssNiType::UMTS_CTRL_PLANE:
-                Unotification->ni_type = 3;
+                Unotification.ni_type = 3;
                 break;
             case IGnssNiCallback::GnssNiType::EMERGENCY_SUPL:
-                Unotification->ni_type = 4;
+                Unotification.ni_type = 4;
                 break;
             default:
-                Unotification->ni_type = 1;
+                Unotification.ni_type = 1;
                 break;
         }
-        Unotification->notify_flags = notification.notifyFlags;
-        Unotification->timeout = notification.timeoutSec;
+        Unotification.notify_flags = notification.notifyFlags;
+        Unotification.timeout = notification.timeoutSec;
         switch (notification.defaultResponse) {
             case IGnssNiCallback::GnssUserResponseType::RESPONSE_ACCEPT:
-                Unotification->default_response = 1;
+                Unotification.default_response = 1;
                 break;
             case IGnssNiCallback::GnssUserResponseType::RESPONSE_DENY:
-                Unotification->default_response = 2;
+                Unotification.default_response = 2;
                 break;
             case IGnssNiCallback::GnssUserResponseType::RESPONSE_NORESP:
-                Unotification->default_response = 3;
+                Unotification.default_response = 3;
                 break;
             default:
-                Unotification->default_response = 1;
+                Unotification.default_response = 1;
                 break;
         }
-        strcpy(Unotification->requestor_id, notification.requestorId.c_str());
-        strcpy(Unotification->text, notification.notificationMessage.c_str());
+        strcpy(Unotification.requestor_id, notification.requestorId.c_str());
+        strcpy(Unotification.text, notification.notificationMessage.c_str());
         switch (notification.requestorIdEncoding) {
             case IGnssNiCallback::GnssNiEncodingType::ENC_NONE:
-                Unotification->requestor_id_encoding = 1;
+                Unotification.requestor_id_encoding = 1;
                 break;
             case IGnssNiCallback::GnssNiEncodingType::ENC_SUPL_GSM_DEFAULT:
-                Unotification->requestor_id_encoding = 2;
+                Unotification.requestor_id_encoding = 2;
                 break;
             case IGnssNiCallback::GnssNiEncodingType::ENC_SUPL_UTF8:
-                Unotification->requestor_id_encoding = 3;
+                Unotification.requestor_id_encoding = 3;
                 break;
             case IGnssNiCallback::GnssNiEncodingType::ENC_SUPL_UCS2:
-                Unotification->requestor_id_encoding = 3;
+                Unotification.requestor_id_encoding = 3;
                 break;
             case IGnssNiCallback::GnssNiEncodingType::ENC_UNKNOWN:
-                Unotification->requestor_id_encoding = -1;
+                Unotification.requestor_id_encoding = -1;
                 break;
             default:
-                Unotification->requestor_id_encoding = -1;
+                Unotification.requestor_id_encoding = -1;
                 break;
         }
         switch (notification.notificationIdEncoding) {
             case IGnssNiCallback::GnssNiEncodingType::ENC_NONE:
-                Unotification->text_encoding = 1;
+                Unotification.text_encoding = 1;
                 break;
             case IGnssNiCallback::GnssNiEncodingType::ENC_SUPL_GSM_DEFAULT:
-                Unotification->text_encoding = 2;
+                Unotification.text_encoding = 2;
                 break;
             case IGnssNiCallback::GnssNiEncodingType::ENC_SUPL_UTF8:
-                Unotification->text_encoding = 3;
+                Unotification.text_encoding = 3;
                 break;
             case IGnssNiCallback::GnssNiEncodingType::ENC_SUPL_UCS2:
-                Unotification->text_encoding = 3;
+                Unotification.text_encoding = 3;
                 break;
             case IGnssNiCallback::GnssNiEncodingType::ENC_UNKNOWN:
-                Unotification->text_encoding = -1;
+                Unotification.text_encoding = -1;
                 break;
             default:
-                Unotification->text_encoding = -1;
+                Unotification.text_encoding = -1;
                 break;
         }
-        hybris_gps_instance->gps_ni_notify_cb(Unotification, hybris_gps_instance->context);
+        hybris_gps_instance->gps_ni_notify_cb(&Unotification, hybris_gps_instance->context);
     }
     return Void();
 }
