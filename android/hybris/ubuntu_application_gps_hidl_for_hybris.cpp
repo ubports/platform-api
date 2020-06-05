@@ -16,6 +16,9 @@
  * Authored by: Daniel d'Andrada <daniel.dandrada@canonical.com>
  * Authored by: Erfan Abdi <erfangplus@gmail.com>
  */
+
+#define LOG_TAG "ubuntu_application_gps_hidl_for_hybris"
+
 #include <ubuntu/hardware/gps.h>
 
 #include <pthread.h>
@@ -157,6 +160,7 @@ struct GnssCallback : public IGnssCallback {
 
 Return<void> GnssCallback::gnssLocationCb(const GnssLocation& location)
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->location_cb){
         UHardwareGpsLocation Ulocation;
         memset(&Ulocation, 0, sizeof(UHardwareGpsLocation));
@@ -177,6 +181,7 @@ Return<void> GnssCallback::gnssLocationCb(const GnssLocation& location)
 
 Return<void> GnssCallback::gnssStatusCb(const IGnssCallback::GnssStatusValue status)
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->status_cb){
         uint16_t Ustatus = 0;
         switch (status) {
@@ -206,6 +211,7 @@ Return<void> GnssCallback::gnssStatusCb(const IGnssCallback::GnssStatusValue sta
 
 Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svStatus)
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->sv_status_cb){
         UHardwareGpsSvStatus UsvStatus;
         memset(&UsvStatus, 0, sizeof(UHardwareGpsSvStatus));
@@ -254,6 +260,7 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
 Return<void> GnssCallback::gnssNmeaCb(
     int64_t timestamp, const ::android::hardware::hidl_string& nmea)
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->nmea_cb)
         hybris_gps_instance->nmea_cb(timestamp, nmea.c_str(), nmea.size(), hybris_gps_instance->context);
     return Void();
@@ -261,6 +268,7 @@ Return<void> GnssCallback::gnssNmeaCb(
 
 Return<void> GnssCallback::gnssSetCapabilitesCb(uint32_t capabilities)
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->set_capabilities_cb)
         hybris_gps_instance->set_capabilities_cb(capabilities, hybris_gps_instance->context);
     return Void();
@@ -268,18 +276,21 @@ Return<void> GnssCallback::gnssSetCapabilitesCb(uint32_t capabilities)
 
 Return<void> GnssCallback::gnssAcquireWakelockCb()
 {
+    ALOGI("%s: called", __func__);
     acquire_wake_lock(PARTIAL_WAKE_LOCK, WAKE_LOCK_NAME);
     return Void();
 }
 
 Return<void> GnssCallback::gnssReleaseWakelockCb()
 {
+    ALOGI("%s: called", __func__);
     release_wake_lock(WAKE_LOCK_NAME);
     return Void();
 }
 
 Return<void> GnssCallback::gnssRequestTimeCb()
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->request_utc_time_cb)
         hybris_gps_instance->request_utc_time_cb(hybris_gps_instance->context);
     return Void();
@@ -287,18 +298,21 @@ Return<void> GnssCallback::gnssRequestTimeCb()
 
 Return<void> GnssCallback::gnssRequestLocationCb(const bool)
 {
+    ALOGI("%s: called", __func__);
     // Empty on purpose.
     return Void();
 }
 
 Return<void> GnssCallback::gnssSetSystemInfoCb(const IGnssCallback::GnssSystemInfo&)
 {
+    ALOGI("%s: called", __func__);
     // Empty on purpose.
     return Void();
 }
 
 Return<void> GnssCallback::gnssNameCb(const android::hardware::hidl_string& name)
 {
+    ALOGI("%s: called", __func__);
     // Empty on purpose.
     return Void();
 }
@@ -309,6 +323,7 @@ class GnssXtraCallback : public IGnssXtraCallback {
 
 Return<void> GnssXtraCallback::downloadRequestCb()
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->xtra_download_request_cb)
         hybris_gps_instance->xtra_download_request_cb(hybris_gps_instance->context);
     return Void();
@@ -325,6 +340,7 @@ struct AGnssCallback : public IAGnssCallback {
 Return<void> AGnssCallback::agnssStatusIpV4Cb(
         const IAGnssCallback::AGnssStatusIpV4& agps_status)
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->agps_status_cb){
         UHardwareGpsAGpsStatus Uagps_status;
         memset(&Uagps_status, 0, sizeof(UHardwareGpsAGpsStatus));
@@ -370,6 +386,7 @@ Return<void> AGnssCallback::agnssStatusIpV4Cb(
 Return<void> AGnssCallback::agnssStatusIpV6Cb(
         const IAGnssCallback::AGnssStatusIpV6& agps_status)
 {
+    ALOGI("%s: called", __func__);
     ALOGE("AGnssStatusIpV6 is not implemented yet.");
     return Void();
 }
@@ -382,6 +399,7 @@ struct GnssNiCallback : public IGnssNiCallback {
 Return<void> GnssNiCallback::niNotifyCb(
         const IGnssNiCallback::GnssNiNotification& notification)
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->gps_ni_notify_cb){
         UHardwareGpsNiNotification Unotification;
         memset(&Unotification, 0, sizeof(UHardwareGpsNiNotification));
@@ -474,6 +492,7 @@ struct AGnssRilCallback : IAGnssRilCallback {
 
 Return<void> AGnssRilCallback::requestSetIdCb(uint32_t setIdFlag)
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->request_setid_cb)
         hybris_gps_instance->request_setid_cb(setIdFlag, hybris_gps_instance->context);
      return Void();
@@ -481,6 +500,7 @@ Return<void> AGnssRilCallback::requestSetIdCb(uint32_t setIdFlag)
 
 Return<void> AGnssRilCallback::requestRefLocCb()
 {
+    ALOGI("%s: called", __func__);
     if (hybris_gps_instance && hybris_gps_instance->request_refloc_cb)
         hybris_gps_instance->request_refloc_cb(0, hybris_gps_instance->context);
     return Void();
@@ -506,6 +526,7 @@ UHardwareGps_::UHardwareGps_(UHardwareGpsParams* params)
 
 UHardwareGps_::~UHardwareGps_()
 {
+    ALOGI("%s: called", __func__);
     if (gnssHal != nullptr) {
         gnssHal->cleanup();
     }
@@ -513,6 +534,7 @@ UHardwareGps_::~UHardwareGps_()
 
 /* Initializes the GNSS service handle. */
 static void set_gps_service_handle() {
+    ALOGI("%s: called", __func__);
     gnssHal_V1_1 = IGnss_V1_1::getService();
     if (gnssHal_V1_1 == nullptr) {
         ALOGD("gnssHal 1.1 was null, trying 1.0");
@@ -523,6 +545,7 @@ static void set_gps_service_handle() {
 }
 
 static void set_gps_service_callbacks() {
+    ALOGI("%s: called", __func__);
     /*
      * Fail if the main interface fails to initialize
      */
@@ -586,6 +609,7 @@ static void set_gps_service_callbacks() {
 
 bool UHardwareGps_::init()
 {
+    ALOGI("%s: called", __func__);
     // Initialize the top level gnss HAL handle.
     set_gps_service_handle();
 
@@ -684,6 +708,7 @@ bool UHardwareGps_::init()
 
 bool UHardwareGps_::start()
 {
+    ALOGI("%s: called", __func__);
     if (gnssHal != nullptr) {
         auto result = gnssHal->start();
         return result.isOk();
@@ -694,6 +719,7 @@ bool UHardwareGps_::start()
 
 bool UHardwareGps_::stop()
 {
+    ALOGI("%s: called", __func__);
     if (gnssHal != nullptr) {
         auto result = gnssHal->stop();
         return result.isOk();
@@ -704,6 +730,7 @@ bool UHardwareGps_::stop()
 
 void UHardwareGps_::inject_time(int64_t time, int64_t time_reference, int uncertainty)
 {
+    ALOGI("%s: called", __func__);
     if (gnssHal != nullptr) {
         auto result = gnssHal->injectTime(time, time_reference, uncertainty);
         if (!result.isOk() || !result) {
@@ -714,6 +741,7 @@ void UHardwareGps_::inject_time(int64_t time, int64_t time_reference, int uncert
 
 void UHardwareGps_::inject_location(double latitude, double longitude, float accuracy)
 {
+    ALOGI("%s: called", __func__);
     if (gnssHal != nullptr) {
         auto result = gnssHal->injectLocation(latitude, longitude, accuracy);
         if (!result.isOk() || !result) {
@@ -724,6 +752,7 @@ void UHardwareGps_::inject_location(double latitude, double longitude, float acc
 
 void UHardwareGps_::delete_aiding_data(uint16_t flags)
 {
+    ALOGI("%s: called", __func__);
     if (gnssHal != nullptr) {
         auto result = gnssHal->deleteAidingData(static_cast<IGnss_V1_0::GnssAidingData>(flags));
         if (!result.isOk()) {
@@ -734,6 +763,7 @@ void UHardwareGps_::delete_aiding_data(uint16_t flags)
 
 void UHardwareGps_::set_server_for_type(UHardwareGpsAGpsType type, const char* hostname, uint16_t port)
 {
+    ALOGI("%s: called", __func__);
     if (agnssIface == nullptr) {
         ALOGE("no AGPS interface in set_agps_server");
         return;
@@ -751,6 +781,7 @@ void UHardwareGps_::set_server_for_type(UHardwareGpsAGpsType type, const char* h
 void UHardwareGps_::set_reference_location(UHardwareGpsAGpsRefLocation* location, size_t size_of_struct)
 {
     IAGnssRil::AGnssRefLocation Alocation;
+    ALOGI("%s: called", __func__);
 
     if (agnssRilIface == nullptr) {
         ALOGE("No AGPS RIL interface in agps_set_reference_location_cellid");
@@ -777,6 +808,7 @@ void UHardwareGps_::set_reference_location(UHardwareGpsAGpsRefLocation* location
 
 void UHardwareGps_::notify_connection_is_open(const char* apn)
 {
+    ALOGI("%s: called", __func__);
     if (agnssIface == nullptr) {
         ALOGE("no AGPS interface in agps_data_conn_open");
         return;
@@ -794,6 +826,7 @@ void UHardwareGps_::notify_connection_is_open(const char* apn)
 
 void UHardwareGps_::notify_connection_is_closed()
 {
+    ALOGI("%s: called", __func__);
     if (agnssIface == nullptr) {
         ALOGE("%s: AGPS interface not supported", __func__);
         return;
@@ -807,6 +840,7 @@ void UHardwareGps_::notify_connection_is_closed()
 
 void UHardwareGps_::notify_connection_not_available()
 {
+    ALOGI("%s: called", __func__);
     if (agnssIface == nullptr) {
         ALOGE("%s: AGPS interface not supported", __func__);
         return;
@@ -821,6 +855,7 @@ void UHardwareGps_::notify_connection_not_available()
 bool UHardwareGps_::set_position_mode(uint32_t mode, uint32_t recurrence, uint32_t min_interval,
                                     uint32_t preferred_accuracy, uint32_t preferred_time)
 {
+    ALOGI("%s: called", __func__);
     Return<bool> result = false;
     if (gnssHal_V1_1 != nullptr) {
         result = gnssHal_V1_1->setPositionMode_1_1(static_cast<IGnss_V1_0::GnssPositionMode>(mode),
@@ -846,6 +881,7 @@ bool UHardwareGps_::set_position_mode(uint32_t mode, uint32_t recurrence, uint32
 
 void UHardwareGps_::inject_xtra_data(char* data, int length)
 {
+    ALOGI("%s: called", __func__);
     if (gnssXtraIface == nullptr) {
         ALOGE("XTRA Interface not supported");
         return;
@@ -858,6 +894,7 @@ void UHardwareGps_::inject_xtra_data(char* data, int length)
 
 UHardwareGps u_hardware_gps_new(UHardwareGpsParams* params)
 {
+    ALOGI("%s: called", __func__);
     UHardwareGps u_hardware_gps = new UHardwareGps_(params);
     hybris_gps_instance = u_hardware_gps;
 
@@ -878,6 +915,7 @@ UHardwareGps u_hardware_gps_new(UHardwareGpsParams* params)
 
 void u_hardware_gps_delete(UHardwareGps handle)
 {
+    ALOGI("%s: called", __func__);
     delete handle;
     if (handle == hybris_gps_instance)
         hybris_gps_instance = NULL;
@@ -885,29 +923,34 @@ void u_hardware_gps_delete(UHardwareGps handle)
 
 bool u_hardware_gps_start(UHardwareGps self)
 {
+    ALOGI("%s: called", __func__);
     return self->start();
 }
 
 bool u_hardware_gps_stop(UHardwareGps self)
 {
+    ALOGI("%s: called", __func__);
     return self->stop();
 }
 
 void u_hardware_gps_inject_time(UHardwareGps self, int64_t time, int64_t time_reference,
                             int uncertainty)
 {
+    ALOGI("%s: called", __func__);
     self->inject_time(time, time_reference, uncertainty);
 }
 
 void u_hardware_gps_inject_location(UHardwareGps self,
                                     UHardwareGpsLocation location)
 {
+    ALOGI("%s: called", __func__);
     self->inject_location(location.latitude, location.longitude,
                           location.accuracy);
 }
 
 void u_hardware_gps_delete_aiding_data(UHardwareGps self, UHardwareGpsAidingData flags)
 {
+    ALOGI("%s: called", __func__);
     self->delete_aiding_data(flags);
 }
 
@@ -917,6 +960,7 @@ void u_hardware_gps_agps_set_server_for_type(
         const char* hostname,
         uint16_t port)
 {
+    ALOGI("%s: called", __func__);
     self->set_server_for_type(type, hostname, port);
 }
 
@@ -925,6 +969,7 @@ void u_hardware_gps_agps_set_reference_location(
     UHardwareGpsAGpsRefLocation *location,
     size_t size_of_struct)
 {
+    ALOGI("%s: called", __func__);
     self->set_reference_location(location, size_of_struct);
 }
 
@@ -932,16 +977,19 @@ void u_hardware_gps_agps_notify_connection_is_open(
     UHardwareGps self,
     const char *apn)
 {
+    ALOGI("%s: called", __func__);
     self->notify_connection_is_open(apn);
 }
 
 void u_hardware_gps_agps_notify_connection_is_closed(UHardwareGps self)
 {
+    ALOGI("%s: called", __func__);
     self->notify_connection_is_closed();
 }
 
 void u_hardware_gps_agps_notify_connection_not_available(UHardwareGps self)
 {
+    ALOGI("%s: called", __func__);
     self->notify_connection_not_available();
 }
 
@@ -950,11 +998,13 @@ bool u_hardware_gps_set_position_mode(UHardwareGps self, uint32_t mode, uint32_t
                                   uint32_t min_interval, uint32_t preferred_accuracy,
                                   uint32_t preferred_time)
 {
+    ALOGI("%s: called", __func__);
     return self->set_position_mode(mode, recurrence, min_interval, preferred_accuracy,
                                    preferred_time);
 }
 
 void u_hardware_gps_inject_xtra_data(UHardwareGps self, char* data, int length)
 {
+    ALOGI("%s: called", __func__);
     self->inject_xtra_data(data, length);
 }
