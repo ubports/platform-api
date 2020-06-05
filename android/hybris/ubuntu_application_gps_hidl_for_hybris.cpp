@@ -158,18 +158,19 @@ struct GnssCallback : public IGnssCallback {
 Return<void> GnssCallback::gnssLocationCb(const GnssLocation& location)
 {
     if (hybris_gps_instance && hybris_gps_instance->location_cb){
-        UHardwareGpsLocation *Ulocation = nullptr;
-        Ulocation->size = sizeof(UHardwareGpsLocation);
-        Ulocation->flags = location.gnssLocationFlags;
-        Ulocation->latitude = location.latitudeDegrees;
-        Ulocation->longitude = location.longitudeDegrees;
-        Ulocation->altitude = location.altitudeMeters;
-        Ulocation->speed = location.speedMetersPerSec;
-        Ulocation->bearing = location.bearingDegrees;
-        Ulocation->accuracy = location.horizontalAccuracyMeters;
-        Ulocation->timestamp = location.timestamp;
+        UHardwareGpsLocation Ulocation;
+        memset(&Ulocation, 0, sizeof(UHardwareGpsLocation));
+        Ulocation.size = sizeof(UHardwareGpsLocation);
+        Ulocation.flags = location.gnssLocationFlags;
+        Ulocation.latitude = location.latitudeDegrees;
+        Ulocation.longitude = location.longitudeDegrees;
+        Ulocation.altitude = location.altitudeMeters;
+        Ulocation.speed = location.speedMetersPerSec;
+        Ulocation.bearing = location.bearingDegrees;
+        Ulocation.accuracy = location.horizontalAccuracyMeters;
+        Ulocation.timestamp = location.timestamp;
 
-        hybris_gps_instance->location_cb(Ulocation, hybris_gps_instance->context);
+        hybris_gps_instance->location_cb(&Ulocation, hybris_gps_instance->context);
     }
     return Void();
 }
