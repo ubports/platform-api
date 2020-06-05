@@ -214,6 +214,10 @@ Return<void> GnssCallback::gnssSvStatusCb(const IGnssCallback::GnssSvStatus& svS
         int used_in_fix_mask = 0;
         UsvStatus.size = sizeof(UHardwareGpsSvStatus);
         UsvStatus.num_svs = svStatus.numSvs;
+        if (UsvStatus.num_svs > U_HARDWARE_GPS_MAX_SVS) {
+            ALOGW("%s: Too many satellites %u. Clamps to %u.", __func__, UsvStatus.num_svs, U_HARDWARE_GPS_MAX_SVS);
+            UsvStatus.num_svs = U_HARDWARE_GPS_MAX_SVS;
+        }
         for (int i = 0; i < UsvStatus.num_svs; i++){
             UsvStatus.sv_list[i].size = sizeof(UHardwareGpsSvInfo);
             int prn = svStatus.gnssSvList[i].svid;
