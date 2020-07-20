@@ -1,7 +1,7 @@
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PROCESS_CPP process-cpp REQUIRED)
 
-include_directories(${GTEST_ROOT}/src)
+find_package(GMock)
 include_directories(${PROCESS_CPP_INCLUDE_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
