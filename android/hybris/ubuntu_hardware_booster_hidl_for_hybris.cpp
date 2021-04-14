@@ -25,12 +25,8 @@
 // android stuff
 #include <android/hardware/power/1.3/IPower.h>
 
-#include <cutils/properties.h>
-
 #include <utils/Log.h>
 #include <utils/RefBase.h>
-
-#include <dlfcn.h>
 
 using android::OK;
 using android::sp;
@@ -55,89 +51,17 @@ struct UbuntuHardwareBooster : public android::RefBase
     bool init();
     void setInteractive(bool interactive);
 
-    typedef void (*BoosterEnableScenario)(int);
-    typedef void (*BoosterDisableScenario)(int);
-
-    static int translate_ubuntu_scenario(UHardwareBoosterScenario scenario)
-    {
-        switch (scenario)
-        {
-            case U_HARDWARE_BOOSTER_SCENARIO_USER_INTERACTION:
-                return 5;
-        }
-
-        return 0;
-    }
-
-    static BoosterEnableScenario load_booster_enable_scenario(void* dl_handle)
-    {
-        if (!dl_handle)
-            return NULL;
-
-        return reinterpret_cast<BoosterEnableScenario>(::dlsym(dl_handle, booster_enable_scenario_from_property()));
-    }
-
-    static BoosterDisableScenario load_booster_disable_scenario(void* dl_handle)
-    {
-        if (!dl_handle)
-            return NULL;
-
-        return reinterpret_cast<BoosterDisableScenario>(::dlsym(dl_handle, booster_disable_scenario_from_property()));
-    }
-
-    static const char* dl_path_from_property()
-    {
-        static char value[PROP_VALUE_MAX];
-        static int rc = property_get("ubuntu.booster.dl", value, NULL);
-
-        return rc == 0 ? NULL : &value[0];
-    }
-
-    static const char* booster_enable_scenario_from_property()
-    {
-        static char value[PROP_VALUE_MAX];
-        static int rc = property_get("ubuntu.booster.enable", value, NULL);
-
-        return rc == 0 ? NULL : &value[0];
-    }
-
-    static const char* booster_disable_scenario_from_property()
-    {
-        static char value[PROP_VALUE_MAX];
-        static int rc = property_get("ubuntu.booster.disable", value, NULL);
-
-        return rc == 0 ? NULL : &value[0];
-    }
-
-    UbuntuHardwareBooster()
-            : dl_handle(dlopen(dl_path_from_property(), RTLD_NOW)),
-              booster_enable_scenario(load_booster_enable_scenario(dl_handle)),
-              booster_disable_scenario(load_booster_disable_scenario(dl_handle))
-    {
-    }
-
-    ~UbuntuHardwareBooster()
-    {
-        if (dl_handle)
-            dlclose(dl_handle);
-    }
-
-    void enable_scenario(UHardwareBoosterScenario scenario)
-    {
-        if (booster_enable_scenario)
-            booster_enable_scenario(translate_ubuntu_scenario(scenario));
-    }
-
-    void disable_scenario(UHardwareBoosterScenario scenario)
-    {
-        if (booster_disable_scenario)
-            booster_disable_scenario(translate_ubuntu_scenario(scenario));
-    }
-
-    void* dl_handle;
-    BoosterEnableScenario booster_enable_scenario;
-    BoosterDisableScenario booster_disable_scenario;
+    UbuntuHardwareBooster();
+    ~UbuntuHardwareBooster();
 };
+
+UbuntuHardwareBooster::UbuntuHardwareBooster()
+{
+}
+
+UbuntuHardwareBooster::~UbuntuHardwareBooster()
+{
+}
 
 static void set_power_service_handle() {
     powerHal_V1_3 = IPower_V1_3::getService();
@@ -171,24 +95,22 @@ bool UbuntuHardwareBooster::init()
     /* Initializes the Power service handle. */
     set_power_service_handle();
     
-    if (powerHal)
-        return true;
-
-    ALOGE("Unable to get Power service\n");
-    return false;
+    if (powerHal == nullptr) {
+        ALOGE("Unable to get Power service\n");
+        return false;
+    }
+    
+    return true;
 }
 
 void UbuntuHardwareBooster::setInteractive(bool interactive)
 {
-    if (powerHal)
-        powerHal->setInteractive(interactive);
-
-    if (dl_handle) {
-        if (interactive)
-            enable_scenario(U_HARDWARE_BOOSTER_SCENARIO_USER_INTERACTION);
-        else
-            disable_scenario(U_HARDWARE_BOOSTER_SCENARIO_USER_INTERACTION);
+    if (powerHal == nullptr) {
+        ALOGE("Unable to get Power service\n");
+        return;
     }
+
+    powerHal->setInteractive(interactive);
 }
 
 UHardwareBooster*
