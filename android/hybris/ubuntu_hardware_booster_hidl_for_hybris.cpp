@@ -110,10 +110,17 @@ struct UbuntuHardwareBooster : public android::RefBase
     }
 
     UbuntuHardwareBooster()
-            : dl_handle(dlopen(dl_path_from_property(), RTLD_NOW)),
-              booster_enable_scenario(load_booster_enable_scenario(dl_handle)),
-              booster_disable_scenario(load_booster_disable_scenario(dl_handle))
     {
+        const char* dl_path = dl_path_from_property();
+
+        if (dl_path)
+            dl_handle = dlopen(dl_path, RTLD_NOW);
+
+        if (!dl_handle)
+            return;
+
+        booster_enable_scenario = load_booster_enable_scenario(dl_handle);
+        booster_disable_scenario = load_booster_disable_scenario(dl_handle);
     }
 
     ~UbuntuHardwareBooster()
@@ -134,9 +141,9 @@ struct UbuntuHardwareBooster : public android::RefBase
             booster_disable_scenario(translate_ubuntu_scenario(scenario));
     }
 
-    void* dl_handle;
-    BoosterEnableScenario booster_enable_scenario;
-    BoosterDisableScenario booster_disable_scenario;
+    void* dl_handle = nullptr;
+    BoosterEnableScenario booster_enable_scenario = nullptr;
+    BoosterDisableScenario booster_disable_scenario = nullptr;
 };
 
 static void set_power_service_handle() {
