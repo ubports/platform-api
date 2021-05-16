@@ -26,6 +26,8 @@
 #include <ubuntu/application/sensors/proximity.h>
 #include <ubuntu/application/sensors/light.h>
 #include <ubuntu/application/sensors/orientation.h>
+#include <ubuntu/application/sensors/gyroscope.h>
+#include <ubuntu/application/sensors/magnetic.h>
 
 void on_new_accelerometer_event(UASAccelerometerEvent* event, void* context)
 {
@@ -82,12 +84,40 @@ void on_new_orientation_event(UASOrientationEvent* event, void* context)
     printf("\tz: %f\n", z);
 }
 
+void on_new_gyroscope_event(UASGyroscopeEvent* event, void* context)
+{
+    float x; uas_gyroscope_event_get_rate_of_rotation_around_x(event, &x);
+    float y; uas_gyroscope_event_get_rate_of_rotation_around_y(event, &y);
+    float z; uas_gyroscope_event_get_rate_of_rotation_around_z(event, &z);
+
+    printf("%s \n", __PRETTY_FUNCTION__);
+    printf("\ttime: %" PRIu64 "\n", uas_gyroscope_event_get_timestamp(event));
+    printf("\tomega_x: %f\n", x);
+    printf("\tomega_y: %f\n", y);
+    printf("\tomega_z: %f\n", z);
+}
+
+void on_new_magnetic_event(UASMagneticEvent* event, void* context)
+{
+    float x; uas_magnetic_event_get_magnetic_field_x(event, &x);
+    float y; uas_magnetic_event_get_magnetic_field_y(event, &y);
+    float z; uas_magnetic_event_get_magnetic_field_z(event, &z);
+
+    printf("%s \n", __PRETTY_FUNCTION__);
+    printf("\ttime: %" PRIu64 "\n", uas_magnetic_event_get_timestamp(event));
+    printf("\tx: %f\n", x);
+    printf("\ty: %f\n", y);
+    printf("\tz: %f\n", z);
+}
+
 int main(int argc, char** argv)
 {
     UASensorsAccelerometer* accelerometer = ua_sensors_accelerometer_new();
     UASensorsProximity* proximity = ua_sensors_proximity_new();
     UASensorsLight* ambientlight = ua_sensors_light_new();
     UASensorsOrientation* orientation = ua_sensors_orientation_new();
+    UASensorsGyroscope* gyroscope = ua_sensors_gyroscope_new();
+    UASensorsMagnetic* magnetic = ua_sensors_magnetic_new();
 
     ua_sensors_accelerometer_set_reading_cb(accelerometer,
                                             on_new_accelerometer_event,
@@ -105,10 +135,20 @@ int main(int argc, char** argv)
                                           on_new_orientation_event,
                                           NULL);
 
+    ua_sensors_gyroscope_set_reading_cb(gyroscope,
+                                        on_new_gyroscope_event,
+                                        NULL);
+
+    ua_sensors_magnetic_set_reading_cb(magnetic,
+                                       on_new_magnetic_event,
+                                       NULL);
+
     ua_sensors_accelerometer_enable(accelerometer);
     ua_sensors_proximity_enable(proximity);
     ua_sensors_light_enable(ambientlight);
     ua_sensors_orientation_enable(orientation);
+    ua_sensors_gyroscope_enable(gyroscope);
+    ua_sensors_magnetic_enable(magnetic);
 
     while(true)
     {

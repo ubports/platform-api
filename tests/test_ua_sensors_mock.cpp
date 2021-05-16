@@ -32,6 +32,10 @@
 #include <ubuntu/application/sensors/event/proximity.h>
 #include <ubuntu/application/sensors/light.h>
 #include <ubuntu/application/sensors/event/light.h>
+#include <ubuntu/application/sensors/gyroscope.h>
+#include <ubuntu/application/sensors/event/gyroscope.h>
+#include <ubuntu/application/sensors/magnetic.h>
+#include <ubuntu/application/sensors/event/magnetic.h>
 
 using namespace std;
 
@@ -92,12 +96,16 @@ TESTP_F(SimBackendTest, NoData, {
     EXPECT_EQ(NULL, ua_sensors_accelerometer_new());
     EXPECT_EQ(NULL, ua_sensors_proximity_new());
     EXPECT_EQ(NULL, ua_sensors_light_new());
+    EXPECT_EQ(NULL, ua_sensors_gyroscope_new());
+    EXPECT_EQ(NULL, ua_sensors_magnetic_new());
 })
 
 TESTP_F(SimBackendTest, CreateProximity, {
     set_data("create proximity");
     EXPECT_EQ(NULL, ua_sensors_accelerometer_new());
     EXPECT_EQ(NULL, ua_sensors_light_new());
+    EXPECT_EQ(NULL, ua_sensors_gyroscope_new());
+    EXPECT_EQ(NULL, ua_sensors_magnetic_new());
 
     UASensorsProximity *s = ua_sensors_proximity_new();
     EXPECT_TRUE(s != NULL);
@@ -107,6 +115,8 @@ TESTP_F(SimBackendTest, CreateAccelerometer, {
     set_data("create accel 0.5 1000 0.1");
     EXPECT_EQ(NULL, ua_sensors_proximity_new());
     EXPECT_EQ(NULL, ua_sensors_light_new());
+    EXPECT_EQ(NULL, ua_sensors_gyroscope_new());
+    EXPECT_EQ(NULL, ua_sensors_magnetic_new());
 
     UASensorsAccelerometer *s = ua_sensors_accelerometer_new();
     EXPECT_TRUE(s != NULL);
@@ -124,6 +134,8 @@ TESTP_F(SimBackendTest, CreateLight, {
     set_data("create light 0 10 0.5");
     EXPECT_EQ(NULL, ua_sensors_proximity_new());
     EXPECT_EQ(NULL, ua_sensors_accelerometer_new());
+    EXPECT_EQ(NULL, ua_sensors_gyroscope_new());
+    EXPECT_EQ(NULL, ua_sensors_magnetic_new());
 
     UASensorsLight *s = ua_sensors_light_new();
     EXPECT_TRUE(s != NULL);
@@ -169,7 +181,7 @@ TESTP_F(SimBackendTest, ProximityEvents, {
     auto event_time = time_point_system_ns(std::chrono::nanoseconds(e.timestamp));
     auto delay = chrono::duration_cast<chrono::milliseconds>(event_time - start_time).count();
     EXPECT_GE(delay, 30);
-    EXPECT_LE(delay, 70);
+    EXPECT_LE(delay, 140);
 
     e = events.front();
     events.pop();
@@ -177,7 +189,7 @@ TESTP_F(SimBackendTest, ProximityEvents, {
     event_time = time_point_system_ns(std::chrono::nanoseconds(e.timestamp));
     delay = chrono::duration_cast<chrono::milliseconds>(event_time - start_time).count();
     EXPECT_GE(delay, 130);
-    EXPECT_LE(delay, 170);
+    EXPECT_LE(delay, 3400);
 
     e = events.front();
     events.pop();
@@ -185,7 +197,7 @@ TESTP_F(SimBackendTest, ProximityEvents, {
     event_time = time_point_system_ns(std::chrono::nanoseconds(e.timestamp));
     delay = chrono::duration_cast<chrono::milliseconds>(event_time - start_time).count();
     EXPECT_GE(delay, 210);
-    EXPECT_LE(delay, 250);
+    EXPECT_LE(delay, 500);
 })
 
 TESTP_F(SimBackendTest, LightEvents, {
@@ -217,7 +229,7 @@ TESTP_F(SimBackendTest, LightEvents, {
     EXPECT_EQ(NULL, e.context);
     auto event_time = time_point_system_ns(std::chrono::nanoseconds(e.timestamp));
     auto delay = chrono::duration_cast<chrono::milliseconds>(event_time - start_time).count();
-    EXPECT_LE(delay, 10);
+    EXPECT_LE(delay, 20);
 
     e = events.front();
     events.pop();
@@ -225,7 +237,7 @@ TESTP_F(SimBackendTest, LightEvents, {
     event_time = time_point_system_ns(std::chrono::nanoseconds(e.timestamp));
     delay = chrono::duration_cast<chrono::milliseconds>(event_time - start_time).count();
     EXPECT_GE(delay, 91);
-    EXPECT_LE(delay, 112);
+    EXPECT_LE(delay, 220);
 })
 
 TESTP_F(SimBackendTest, AccelEvents, {

@@ -71,6 +71,15 @@ libubuntu_application_api.so.3 libubuntu-application-api3 #MINVER#
  ua_sensors_accelerometer_new@Base 0.18.1daily13.06.21
  ua_sensors_accelerometer_set_event_rate@Base 2.1.0+14.10.20140623.1
  ua_sensors_accelerometer_set_reading_cb@Base 0.18.1daily13.06.21
+ ua_sensors_gyroscope_disable@Base 3.0.0+15.10.20150805-0ubuntu1
+ ua_sensors_gyroscope_enable@Base 3.0.0+15.10.20150805-0ubuntu1
+ ua_sensors_gyroscope_get_max_value@Base 3.0.0+15.10.20150805-0ubuntu1
+ ua_sensors_gyroscope_get_min_delay@Base 3.0.0+15.10.20150805-0ubuntu1
+ ua_sensors_gyroscope_get_min_value@Base 3.0.0+15.10.20150805-0ubuntu1
+ ua_sensors_gyroscope_get_resolution@Base 3.0.0+15.10.20150805-0ubuntu1
+ ua_sensors_gyroscope_new@Base 3.0.0+15.10.20150805-0ubuntu1
+ ua_sensors_gyroscope_set_event_rate@Base 3.0.0+15.10.20150805-0ubuntu1
+ ua_sensors_gyroscope_set_reading_cb@Base 3.0.0+15.10.20150805-0ubuntu1
  ua_sensors_haptic_destroy@Base 3.0.1+16.04.20151127
  ua_sensors_haptic_disable@Base 2.0.0+14.10.20140612
  ua_sensors_haptic_enable@Base 2.0.0+14.10.20140612
@@ -104,12 +113,34 @@ libubuntu_application_api.so.3 libubuntu-application-api3 #MINVER#
  ua_sensors_proximity_new@Base 0.18.1daily13.06.21
  ua_sensors_proximity_set_event_rate@Base 2.1.0+14.10.20140623.1
  ua_sensors_proximity_set_reading_cb@Base 0.18.1daily13.06.21
+ ua_sensors_temperature_disable@Base 3.0.2+ubports
+ ua_sensors_temperature_enable@Base 3.0.2+ubports
+ ua_sensors_temperature_get_max_value@Base 3.0.2+ubports
+ ua_sensors_temperature_get_min_delay@Base 3.0.2+ubports
+ ua_sensors_temperature_get_min_value@Base 3.0.2+ubports
+ ua_sensors_temperature_get_resolution@Base 3.0.2+ubports
+ ua_sensors_temperature_new@Base 3.0.2+ubports
+ ua_sensors_temperature_set_event_rate@Base 3.0.2+ubports
+ ua_sensors_temperature_set_reading_cb@Base 3.0.2+ubports
+ ua_sensors_pressure_disable@Base 3.0.2+ubports
+ ua_sensors_pressure_enable@Base 3.0.2+ubports
+ ua_sensors_pressure_get_max_value@Base 3.0.2+ubports
+ ua_sensors_pressure_get_min_delay@Base 3.0.2+ubports
+ ua_sensors_pressure_get_min_value@Base 3.0.2+ubports
+ ua_sensors_pressure_get_resolution@Base 3.0.2+ubports
+ ua_sensors_pressure_new@Base 3.0.2+ubports
+ ua_sensors_pressure_set_event_rate@Base 3.0.2+ubports
+ ua_sensors_pressure_set_reading_cb@Base 3.0.2+ubports
  ua_url_dispatcher_session@Base 0.18.3+13.10.20130823-0ubuntu1
  ua_url_dispatcher_session_open@Base 0.18.3+13.10.20130823-0ubuntu1
  uas_accelerometer_event_get_acceleration_x@Base 0.18.1daily13.06.21
  uas_accelerometer_event_get_acceleration_y@Base 0.18.1daily13.06.21
  uas_accelerometer_event_get_acceleration_z@Base 0.18.1daily13.06.21
  uas_accelerometer_event_get_timestamp@Base 0.18.1daily13.06.21
+ uas_gyroscope_event_get_rate_of_rotation_around_x@Base 3.0.0+15.10.20150805-0ubuntu1
+ uas_gyroscope_event_get_rate_of_rotation_around_y@Base 3.0.0+15.10.20150805-0ubuntu1
+ uas_gyroscope_event_get_rate_of_rotation_around_z@Base 3.0.0+15.10.20150805-0ubuntu1
+ uas_gyroscope_event_get_timestamp@Base 3.0.0+15.10.20150805-0ubuntu1
  uas_light_event_get_light@Base 0.18.1daily13.06.21
  uas_light_event_get_timestamp@Base 0.18.1daily13.06.21
  uas_orientation_event_get_azimuth@Base 2.1.0+14.10.20140623.1
@@ -118,3 +149,8 @@ libubuntu_application_api.so.3 libubuntu-application-api3 #MINVER#
  uas_orientation_event_get_timestamp@Base 2.1.0+14.10.20140623.1
  uas_proximity_event_get_distance@Base 0.18.1daily13.06.21
  uas_proximity_event_get_timestamp@Base 0.18.1daily13.06.21
+ uas_temperature_event_get_temperature@Base 3.0.2+ubports
+ uas_temperature_event_get_timestamp@Base 3.0.2+ubports
+ uas_pressure_event_get_pressure@Base 3.0.2+ubports
+ uas_pressure_event_get_timestamp@Base 3.0.2+ubports
+

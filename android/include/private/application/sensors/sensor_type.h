@@ -33,6 +33,8 @@ enum SensorType
     sensor_type_gyroscope, ///< A gyroscope
     sensor_type_light, ///< An ambient light sensor
     sensor_type_proximity, ///< A proximity sensor, used to blank the screen when making a call
+    sensor_type_temperature, ///< Ambient temperature [°C]
+    sensor_type_pressure, ///< Ambient pressure [mPa]
     sensor_type_orientation, ///< Virtual sensor, reports sensor fusion results regarding a device's orientation
     sensor_type_linear_acceleration, ///< Virtual sensor, reports sensor fusion results regarding a device's linear acceleration
     sensor_type_rotation_vector, ///< Virtual sensor, reports sensor fusion results regarding a device's rotation vector
