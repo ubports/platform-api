@@ -20,6 +20,10 @@
 #include <ubuntu/application/sensors/proximity.h>
 #include <ubuntu/application/sensors/light.h>
 #include <ubuntu/application/sensors/orientation.h>
+#include <ubuntu/application/sensors/gyroscope.h>
+#include <ubuntu/application/sensors/magnetic.h>
+#include <ubuntu/application/sensors/temperature.h>
+#include <ubuntu/application/sensors/pressure.h>
 
 #include <stddef.h>
 
@@ -364,3 +368,349 @@ UStatus uas_orientation_event_get_roll(UASOrientationEvent*, float* value)
 
     return U_STATUS_SUCCESS;
 }
+
+// Gyroscope Sensor
+UASensorsGyroscope* ua_sensors_gyroscope_new()
+{
+    return NULL;
+}
+
+UStatus ua_sensors_gyroscope_enable(UASensorsGyroscope*)
+{
+    return (UStatus) 0;
+}
+
+UStatus ua_sensors_gyroscope_disable(UASensorsGyroscope*)
+{
+    return (UStatus) 0;
+}
+
+uint32_t ua_sensors_gyroscope_get_min_delay(UASensorsGyroscope*)
+{
+    return 0;
+}
+
+UStatus ua_sensors_gyroscope_get_min_value(UASensorsGyroscope*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_gyroscope_get_max_value(UASensorsGyroscope*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_gyroscope_get_resolution(UASensorsGyroscope*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+void ua_sensors_gyroscope_set_reading_cb(UASensorsGyroscope*, on_gyroscope_event_cb, void *)
+{
+}
+
+UStatus ua_sensors_gyroscope_set_event_rate(UASensorsGyroscope*, uint32_t)
+{
+    return U_STATUS_SUCCESS;
+}
+
+// Gyroscope Sensor Event
+uint64_t uas_gyroscope_event_get_timestamp(UASGyroscopeEvent*)
+{
+    return 0;
+}
+
+UStatus uas_gyroscope_event_get_rate_of_rotation_around_x(UASGyroscopeEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus uas_gyroscope_event_get_rate_of_rotation_around_y(UASGyroscopeEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus uas_gyroscope_event_get_rate_of_rotation_around_z(UASGyroscopeEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+// Magnetic Field Sensor
+UASensorsMagnetic* ua_sensors_magnetic_new()
+{
+    return NULL;
+}
+
+UStatus ua_sensors_magnetic_enable(UASensorsMagnetic*)
+{
+    return (UStatus) 0;
+}
+
+UStatus ua_sensors_magnetic_disable(UASensorsMagnetic*)
+{
+    return (UStatus) 0;
+}
+
+uint32_t ua_sensors_magnetic_get_min_delay(UASensorsMagnetic*)
+{
+    return 0;
+}
+
+UStatus ua_sensors_magnetic_get_min_value(UASensorsMagnetic*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_magnetic_get_max_value(UASensorsMagnetic*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_magnetic_get_resolution(UASensorsMagnetic*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_magnetic_set_event_rate(UASensorsMagnetic* s, uint32_t rate)
+{
+    return U_STATUS_SUCCESS;
+}
+
+void ua_sensors_magnetic_set_reading_cb(UASensorsMagnetic*, on_magnetic_event_cb, void*)
+{
+}
+
+// Acceleration Sensor Event
+uint64_t uas_magnetic_event_get_timestamp(UASMagneticEvent*)
+{
+    return 0;
+}
+
+UStatus uas_magnetic_event_get_magnetic_field_x(UASMagneticEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus uas_magnetic_event_get_magnetic_field_y(UASMagneticEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus uas_magnetic_event_get_magnetic_field_z(UASMagneticEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+// Temperature Sensor
+UASensorsTemperature* ua_sensors_temperature_new()
+{
+    return NULL;
+}
+
+UStatus ua_sensors_temperature_enable(UASensorsTemperature*)
+{
+    return (UStatus) 0;
+}
+
+UStatus ua_sensors_temperature_disable(UASensorsTemperature*)
+{
+    return (UStatus) 0;
+}
+
+uint32_t ua_sensors_temperature_get_min_delay(UASensorsTemperature*)
+{
+    return 0;
+}
+
+UStatus ua_sensors_temperature_get_min_value(UASensorsTemperature*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_temperature_get_max_value(UASensorsTemperature*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_temperature_get_resolution(UASensorsTemperature*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+void ua_sensors_temperature_set_reading_cb(UASensorsTemperature*, on_temperature_event_cb, void *)
+{
+}
+
+UStatus ua_sensors_temperature_set_event_rate(UASensorsTemperature*, uint32_t)
+{
+    return U_STATUS_SUCCESS;
+}
+
+// Temperature Sensor Event
+uint64_t uas_temperature_event_get_timestamp(UASTemperatureEvent*)
+{
+    return 0;
+}
+
+UStatus uas_temperature_event_get_temperature(UASTemperatureEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+// Pressure Sensor
+UASensorsPressure* ua_sensors_pressure_new()
+{
+    return NULL;
+}
+
+UStatus ua_sensors_pressure_enable(UASensorsPressure*)
+{
+    return (UStatus) 0;
+}
+
+UStatus ua_sensors_pressure_disable(UASensorsPressure*)
+{
+    return (UStatus) 0;
+}
+
+uint32_t ua_sensors_pressure_get_min_delay(UASensorsPressure*)
+{
+    return 0;
+}
+
+UStatus ua_sensors_pressure_get_min_value(UASensorsPressure*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_pressure_get_max_value(UASensorsPressure*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_pressure_get_resolution(UASensorsPressure*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+void ua_sensors_pressure_set_reading_cb(UASensorsPressure*, on_pressure_event_cb, void *)
+{
+}
+
+UStatus ua_sensors_pressure_set_event_rate(UASensorsPressure*, uint32_t)
+{
+    return U_STATUS_SUCCESS;
+}
+
+// Pressure Sensor Event
+uint64_t uas_pressure_event_get_timestamp(UASPressureEvent*)
+{
+    return 0;
+}
+
+UStatus uas_pressure_event_get_pressure(UASPressureEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+

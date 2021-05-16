@@ -21,6 +21,10 @@
 #include <ubuntu/application/sensors/proximity.h>
 #include <ubuntu/application/sensors/light.h>
 #include <ubuntu/application/sensors/orientation.h>
+#include <ubuntu/application/sensors/gyroscope.h>
+#include <ubuntu/application/sensors/magnetic.h>
+#include <ubuntu/application/sensors/temperature.h>
+#include <ubuntu/application/sensors/pressure.h>
 
 #include <private/application/sensors/sensor.h>
 #include <private/application/sensors/sensor_listener.h>
@@ -42,6 +46,10 @@ struct SensorListener : public ubuntu::application::sensors::SensorListener
                        on_proximity_event(NULL),
                        on_light_event(NULL),
                        on_orientation_event(NULL),
+                       on_gyroscope_event(NULL),
+                       on_magnetic_event(NULL),
+                       on_temperature_event(NULL),
+                       on_pressure_event(NULL),
                        context(nullptr)
     {
     }
@@ -118,6 +126,74 @@ struct SensorListener : public ubuntu::application::sensors::SensorListener
 
                 break;
             }
+            case ubuntu::application::sensors::sensor_type_gyroscope:
+            {
+                if (!on_gyroscope_event)
+                    return;
+
+                ubuntu::application::sensors::GyroscopeEvent ev(
+                        reading->timestamp,
+                        reading->gyroscopic[0],
+                        reading->gyroscopic[1],
+                        reading->gyroscopic[2]
+                        );
+
+                on_gyroscope_event(
+                    &ev, this->context
+                    );
+
+                break;
+            }
+            case ubuntu::application::sensors::sensor_type_magnetic_field:
+            {
+                if (!on_magnetic_event)
+                    return;
+
+                ubuntu::application::sensors::MagneticEvent ev(
+                        reading->timestamp,
+                        reading->magnetic[0],
+                        reading->magnetic[1],
+                        reading->magnetic[2]
+                        );
+
+                on_magnetic_event(
+                    &ev, this->context
+                    );
+
+                break;
+            }
+            case ubuntu::application::sensors::sensor_type_temperature:
+            {
+                if (!on_temperature_event)
+                    return;
+
+                ubuntu::application::sensors::TemperatureEvent ev(
+                        reading->timestamp,
+                        reading->temperature
+                    );
+
+                on_temperature_event(
+                    &ev, this->context
+                    );
+
+                break;
+            }
+            case ubuntu::application::sensors::sensor_type_pressure:
+            {
+                if (!on_pressure_event)
+                    return;
+
+                ubuntu::application::sensors::PressureEvent ev(
+                        reading->timestamp,
+                        reading->pressure
+                    );
+
+                on_pressure_event(
+                    &ev, this->context
+                    );
+
+                break;
+            }
         }
     }
 
@@ -125,6 +201,10 @@ struct SensorListener : public ubuntu::application::sensors::SensorListener
     on_proximity_event_cb on_proximity_event;
     on_light_event_cb on_light_event;
     on_orientation_event_cb on_orientation_event;
+    on_gyroscope_event_cb on_gyroscope_event;
+    on_magnetic_event_cb on_magnetic_event;
+    on_temperature_event_cb on_temperature_event;
+    on_pressure_event_cb on_pressure_event;
     void *context;
 };
 
@@ -132,10 +212,18 @@ ubuntu::application::sensors::Sensor::Ptr orientation;
 ubuntu::application::sensors::Sensor::Ptr accelerometer;
 ubuntu::application::sensors::Sensor::Ptr proximity;
 ubuntu::application::sensors::Sensor::Ptr light;
+ubuntu::application::sensors::Sensor::Ptr gyroscope;
+ubuntu::application::sensors::Sensor::Ptr magnetic;
+ubuntu::application::sensors::Sensor::Ptr temperature;
+ubuntu::application::sensors::Sensor::Ptr pressure;
 ubuntu::application::sensors::SensorListener::Ptr orientation_listener;
 ubuntu::application::sensors::SensorListener::Ptr accelerometer_listener;
 ubuntu::application::sensors::SensorListener::Ptr proximity_listener;
 ubuntu::application::sensors::SensorListener::Ptr light_listener;
+ubuntu::application::sensors::SensorListener::Ptr gyroscope_listener;
+ubuntu::application::sensors::SensorListener::Ptr magnetic_listener;
+ubuntu::application::sensors::SensorListener::Ptr temperature_listener;
+ubuntu::application::sensors::SensorListener::Ptr pressure_listener;
 }
 
 static int32_t toHz(int32_t microseconds)
@@ -211,7 +299,7 @@ ua_sensors_proximity_get_min_value(
 {
     if (sensor == NULL || value == NULL)
         return U_STATUS_ERROR;
-    
+
     ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
     auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
     *value = s->min_value();
@@ -332,7 +420,7 @@ ua_sensors_light_enable(
 
     ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
     auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
-    
+
     s->enable();
 
     return U_STATUS_SUCCESS;
@@ -493,7 +581,7 @@ ua_sensors_accelerometer_enable(
 
     ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
     auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
-    
+
     s->enable();
 
     return U_STATUS_SUCCESS;
@@ -577,8 +665,9 @@ ua_sensors_accelerometer_set_reading_cb(
     void *ctx)
 {
     if (sensor == NULL)
-        return; 
+        return;
 
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
     auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
 
     SensorListener<ubuntu::application::sensors::sensor_type_accelerometer>* sl
@@ -622,7 +711,7 @@ uas_accelerometer_event_get_acceleration_x(
 {
     if (event == NULL || value == NULL)
         return U_STATUS_ERROR;
-    
+
     auto ev = static_cast<ubuntu::application::sensors::AccelerometerEvent*>(event);
     *value = ev->get_x();
 
@@ -681,7 +770,7 @@ ua_sensors_orientation_enable(
 
     ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
     auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
-    
+
     s->enable();
 
     return U_STATUS_SUCCESS;
@@ -765,8 +854,9 @@ ua_sensors_orientation_set_reading_cb(
     void *ctx)
 {
     if (sensor == NULL)
-        return; 
+        return;
 
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
     auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
 
     SensorListener<ubuntu::application::sensors::sensor_type_orientation>* sl
@@ -841,6 +931,707 @@ uas_orientation_event_get_roll(
 
     auto ev = static_cast<ubuntu::application::sensors::OrientationEvent*>(event);
     *value = ev->get_roll();
+
+    return U_STATUS_SUCCESS;
+}
+
+/*
+ * Gyroscopic Sensor
+ */
+
+UASensorsGyroscope*
+ua_sensors_gyroscope_new()
+{
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    gyroscope =
+        ubuntu::application::sensors::SensorService::sensor_for_type(
+            ubuntu::application::sensors::sensor_type_gyroscope);
+
+    return gyroscope.get();
+}
+
+UStatus
+ua_sensors_gyroscope_enable(
+    UASensorsGyroscope* sensor)
+{
+    if (sensor == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+
+    s->enable();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_gyroscope_disable(
+    UASensorsGyroscope* sensor)
+{
+    if (sensor == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    s->disable();
+
+    return U_STATUS_SUCCESS;
+}
+
+uint32_t
+ua_sensors_gyroscope_get_min_delay(
+    UASensorsGyroscope* sensor)
+{
+    if (sensor == NULL)
+        return -1;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    return toHz(s->min_delay());
+}
+
+UStatus
+ua_sensors_gyroscope_get_min_value(
+    UASensorsGyroscope* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->min_value();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_gyroscope_get_max_value(
+    UASensorsGyroscope* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->max_value();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_gyroscope_get_resolution(
+    UASensorsGyroscope* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->resolution();
+
+    return U_STATUS_SUCCESS;
+}
+
+void
+ua_sensors_gyroscope_set_reading_cb(
+    UASensorsGyroscope* sensor,
+    on_gyroscope_event_cb cb,
+    void *ctx)
+{
+    if (sensor == NULL)
+        return;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+
+    SensorListener<ubuntu::application::sensors::sensor_type_gyroscope>* sl
+        = new SensorListener<ubuntu::application::sensors::sensor_type_gyroscope>();
+
+    sl->on_gyroscope_event = cb;
+    sl->context = ctx;
+
+    gyroscope_listener = sl;
+    s->register_listener(gyroscope_listener);
+}
+
+UStatus
+ua_sensors_gyroscope_set_event_rate(
+    UASensorsGyroscope* sensor,
+    uint32_t rate)
+{
+    if (sensor == NULL)
+       return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    if (!s->set_event_rate(rate))
+        return U_STATUS_ERROR;
+
+    return U_STATUS_SUCCESS;
+}
+
+uint64_t
+uas_gyroscope_event_get_timestamp(
+    UASGyroscopeEvent* event)
+{
+    auto ev = static_cast<ubuntu::application::sensors::GyroscopeEvent*>(event);
+    return ev->get_timestamp();
+}
+
+UStatus
+uas_gyroscope_event_get_rate_of_rotation_around_x(
+    UASGyroscopeEvent* event,
+    float* value)
+{
+    if (event == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    auto ev = static_cast<ubuntu::application::sensors::GyroscopeEvent*>(event);
+    *value = ev->get_x_rotation_rate();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+uas_gyroscope_event_get_rate_of_rotation_around_y(
+    UASGyroscopeEvent* event,
+    float* value)
+{
+    if (event == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    auto ev = static_cast<ubuntu::application::sensors::GyroscopeEvent*>(event);
+    *value = ev->get_y_rotation_rate();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+uas_gyroscope_event_get_rate_of_rotation_around_z(
+    UASGyroscopeEvent* event,
+    float* value)
+{
+    if (event == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    auto ev = static_cast<ubuntu::application::sensors::GyroscopeEvent*>(event);
+    *value = ev->get_z_rotation_rate();
+
+    return U_STATUS_SUCCESS;
+}
+
+
+/*
+ * Magnetic Field Sensor
+ */
+
+UASensorsMagnetic*
+ua_sensors_magnetic_new()
+{
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    magnetic =
+        ubuntu::application::sensors::SensorService::sensor_for_type(
+            ubuntu::application::sensors::sensor_type_magnetic_field);
+
+    return magnetic.get();
+}
+
+UStatus
+ua_sensors_magnetic_enable(
+    UASensorsMagnetic* sensor)
+{
+    if (sensor == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+
+    s->enable();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_magnetic_disable(
+    UASensorsMagnetic* sensor)
+{
+    if (sensor == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    s->disable();
+
+    return U_STATUS_SUCCESS;
+}
+
+uint32_t
+ua_sensors_magnetic_get_min_delay(
+    UASensorsMagnetic* sensor)
+{
+    if (sensor == NULL)
+        return -1;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    return toHz(s->min_delay());
+}
+
+UStatus
+ua_sensors_magnetic_get_min_value(
+    UASensorsMagnetic* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->min_value();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_magnetic_get_max_value(
+    UASensorsMagnetic* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->max_value();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_magnetic_get_resolution(
+    UASensorsMagnetic* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->resolution();
+
+    return U_STATUS_SUCCESS;
+}
+
+void
+ua_sensors_magnetic_set_reading_cb(
+    UASensorsMagnetic* sensor,
+    on_magnetic_event_cb cb,
+    void *ctx)
+{
+    if (sensor == NULL)
+        return;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+
+    SensorListener<ubuntu::application::sensors::sensor_type_magnetic_field>* sl
+        = new SensorListener<ubuntu::application::sensors::sensor_type_magnetic_field>();
+
+    sl->on_magnetic_event = cb;
+    sl->context = ctx;
+
+    magnetic_listener = sl;
+    s->register_listener(magnetic_listener);
+}
+
+UStatus
+ua_sensors_magnetic_set_event_rate(
+    UASensorsMagnetic* sensor,
+    uint32_t rate)
+{
+    if (sensor == NULL)
+       return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    if (!s->set_event_rate(rate))
+        return U_STATUS_ERROR;
+
+    return U_STATUS_SUCCESS;
+}
+
+uint64_t
+uas_magnetic_event_get_timestamp(
+    UASMagneticEvent* event)
+{
+    auto ev = static_cast<ubuntu::application::sensors::MagneticEvent*>(event);
+    return ev->get_timestamp();
+}
+
+UStatus
+uas_magnetic_event_get_magnetic_field_x(
+    UASMagneticEvent* event,
+    float* value)
+{
+    if (event == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    auto ev = static_cast<ubuntu::application::sensors::MagneticEvent*>(event);
+    *value = ev->get_x();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+uas_magnetic_event_get_magnetic_field_y(
+    UASMagneticEvent* event,
+    float* value)
+{
+    if (event == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    auto ev = static_cast<ubuntu::application::sensors::MagneticEvent*>(event);
+    *value = ev->get_y();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+uas_magnetic_event_get_magnetic_field_z(
+    UASMagneticEvent* event,
+    float* value)
+{
+    if (event == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    auto ev = static_cast<ubuntu::application::sensors::MagneticEvent*>(event);
+    *value = ev->get_z();
+
+    return U_STATUS_SUCCESS;
+}
+
+/*
+ * Temperature Sensor
+ */
+
+UASensorsTemperature*
+ua_sensors_temperature_new()
+{
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    temperature =
+        ubuntu::application::sensors::SensorService::sensor_for_type(
+            ubuntu::application::sensors::sensor_type_temperature);
+
+    return temperature.get();
+}
+
+UStatus
+ua_sensors_temperature_enable(
+    UASensorsTemperature* sensor)
+{
+    if (sensor == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+
+    s->enable();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_temperature_disable(
+    UASensorsTemperature* sensor)
+{
+    if (sensor == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    s->disable();
+
+    return U_STATUS_SUCCESS;
+}
+
+uint32_t
+ua_sensors_temperature_get_min_delay(
+    UASensorsTemperature* sensor)
+{
+    if (sensor == NULL)
+        return -1;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    return toHz(s->min_delay());
+}
+
+UStatus
+ua_sensors_temperature_get_min_value(
+    UASensorsTemperature* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->min_value();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_temperature_get_max_value(
+    UASensorsTemperature* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->max_value();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_temperature_get_resolution(
+    UASensorsTemperature* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->resolution();
+
+    return U_STATUS_SUCCESS;
+}
+
+void
+ua_sensors_temperature_set_reading_cb(
+    UASensorsTemperature* sensor,
+    on_temperature_event_cb cb,
+    void *ctx)
+{
+    if (sensor == NULL)
+        return;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+
+    SensorListener<ubuntu::application::sensors::sensor_type_temperature>* sl
+        = new SensorListener<ubuntu::application::sensors::sensor_type_temperature>();
+
+    sl->on_temperature_event = cb;
+    sl->context = ctx;
+
+    temperature_listener = sl;
+    s->register_listener(temperature_listener);
+}
+
+UStatus
+ua_sensors_temperature_set_event_rate(
+    UASensorsTemperature* sensor,
+    uint32_t rate)
+{
+    if (sensor == NULL)
+       return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    if (!s->set_event_rate(rate))
+        return U_STATUS_ERROR;
+
+    return U_STATUS_SUCCESS;
+}
+
+uint64_t
+uas_temperature_event_get_timestamp(
+    UASTemperatureEvent* event)
+{
+    auto ev = static_cast<ubuntu::application::sensors::TemperatureEvent*>(event);
+    return ev->get_timestamp();
+}
+
+UStatus
+uas_temperature_event_get_temperature(
+    UASTemperatureEvent* event,
+    float* value)
+{
+    if (event == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    auto ev = static_cast<ubuntu::application::sensors::TemperatureEvent*>(event);
+    *value = ev->get_temperature();
+
+    return U_STATUS_SUCCESS;
+}
+
+/*
+ * Pressure Sensor
+ */
+
+UASensorsPressure*
+ua_sensors_pressure_new()
+{
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    pressure =
+        ubuntu::application::sensors::SensorService::sensor_for_type(
+            ubuntu::application::sensors::sensor_type_pressure);
+
+    return pressure.get();
+}
+
+UStatus
+ua_sensors_pressure_enable(
+    UASensorsPressure* sensor)
+{
+    if (sensor == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+
+    s->enable();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_pressure_disable(
+    UASensorsPressure* sensor)
+{
+    if (sensor == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    s->disable();
+
+    return U_STATUS_SUCCESS;
+}
+
+uint32_t
+ua_sensors_pressure_get_min_delay(
+    UASensorsPressure* sensor)
+{
+    if (sensor == NULL)
+        return -1;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    return toHz(s->min_delay());
+}
+
+UStatus
+ua_sensors_pressure_get_min_value(
+    UASensorsPressure* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->min_value();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_pressure_get_max_value(
+    UASensorsPressure* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->max_value();
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus
+ua_sensors_pressure_get_resolution(
+    UASensorsPressure* sensor,
+    float* value)
+{
+    if (sensor == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    *value = s->resolution();
+
+    return U_STATUS_SUCCESS;
+}
+
+void
+ua_sensors_pressure_set_reading_cb(
+    UASensorsPressure* sensor,
+    on_pressure_event_cb cb,
+    void *ctx)
+{
+    if (sensor == NULL)
+        return;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+
+    SensorListener<ubuntu::application::sensors::sensor_type_pressure>* sl
+        = new SensorListener<ubuntu::application::sensors::sensor_type_pressure>();
+
+    sl->on_pressure_event = cb;
+    sl->context = ctx;
+
+    pressure_listener = sl;
+    s->register_listener(pressure_listener);
+}
+
+UStatus
+ua_sensors_pressure_set_event_rate(
+    UASensorsPressure* sensor,
+    uint32_t rate)
+{
+    if (sensor == NULL)
+       return U_STATUS_ERROR;
+
+    ALOGI("%s():%d", __PRETTY_FUNCTION__, __LINE__);
+    auto s = static_cast<ubuntu::application::sensors::Sensor*>(sensor);
+    if (!s->set_event_rate(rate))
+        return U_STATUS_ERROR;
+
+    return U_STATUS_SUCCESS;
+}
+
+uint64_t
+uas_pressure_event_get_timestamp(
+    UASPressureEvent* event)
+{
+    auto ev = static_cast<ubuntu::application::sensors::PressureEvent*>(event);
+    return ev->get_timestamp();
+}
+
+UStatus
+uas_pressure_event_get_pressure(
+    UASPressureEvent* event,
+    float* value)
+{
+    if (event == NULL || value == NULL)
+        return U_STATUS_ERROR;
+
+    auto ev = static_cast<ubuntu::application::sensors::PressureEvent*>(event);
+    *value = ev->get_pressure();
 
     return U_STATUS_SUCCESS;
 }
