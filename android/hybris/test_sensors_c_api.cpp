@@ -28,6 +28,8 @@
 #include <ubuntu/application/sensors/orientation.h>
 #include <ubuntu/application/sensors/gyroscope.h>
 #include <ubuntu/application/sensors/magnetic.h>
+#include <ubuntu/application/sensors/temperature.h>
+#include <ubuntu/application/sensors/pressure.h>
 
 void on_new_accelerometer_event(UASAccelerometerEvent* event, void* context)
 {
@@ -110,6 +112,24 @@ void on_new_magnetic_event(UASMagneticEvent* event, void* context)
     printf("\tz: %f\n", z);
 }
 
+void on_new_temperature_event(UASTemperatureEvent* event, void* context)
+{
+    float temperature = -1.f; uas_temperature_event_get_temperature(event, &temperature);
+
+    printf("%s \n", __PRETTY_FUNCTION__);
+    printf("\ttime: %" PRIu64 "\n", uas_temperature_event_get_timestamp(event));
+    printf("\ttemperature: %f\n", temperature);
+}
+
+void on_new_pressure_event(UASPressureEvent* event, void* context)
+{
+    float pressure = -1.f; uas_pressure_event_get_pressure(event, &pressure);
+
+    printf("%s \n", __PRETTY_FUNCTION__);
+    printf("\ttime: %" PRIu64 "\n", uas_pressure_event_get_timestamp(event));
+    printf("\tpressure: %f\n", pressure);
+}
+
 int main(int argc, char** argv)
 {
     UASensorsAccelerometer* accelerometer = ua_sensors_accelerometer_new();
@@ -118,37 +138,88 @@ int main(int argc, char** argv)
     UASensorsOrientation* orientation = ua_sensors_orientation_new();
     UASensorsGyroscope* gyroscope = ua_sensors_gyroscope_new();
     UASensorsMagnetic* magnetic = ua_sensors_magnetic_new();
+    UASensorsTemperature* temperature = ua_sensors_temperature_new();
+    UASensorsPressure* pressure = ua_sensors_pressure_new();
 
-    ua_sensors_accelerometer_set_reading_cb(accelerometer,
-                                            on_new_accelerometer_event,
+    if(accelerometer != NULL) {
+        ua_sensors_accelerometer_set_reading_cb(accelerometer,
+                                                on_new_accelerometer_event,
+                                                NULL);
+        ua_sensors_accelerometer_enable(accelerometer);
+    } else {
+        printf("WARN: accelerometer could not be allocated!\n");
+
+    }
+
+    if(proximity != NULL) {
+        ua_sensors_proximity_set_reading_cb(proximity,
+                                            on_new_proximity_event,
                                             NULL);
+        ua_sensors_proximity_enable(proximity);
+    } else {
+        printf("WARN: proximity could not be allocated!\n");
 
-    ua_sensors_proximity_set_reading_cb(proximity,
-                                        on_new_proximity_event,
+    }
+
+    if(ambientlight != NULL) {
+        ua_sensors_light_set_reading_cb(ambientlight,
+                                        on_new_light_event,
                                         NULL);
-  
-    ua_sensors_light_set_reading_cb(ambientlight,
-                                    on_new_light_event,
-                                    NULL);
+        ua_sensors_light_enable(ambientlight);
+    } else {
+        printf("WARN: ambientlight could not be allocated!\n");
 
-    ua_sensors_orientation_set_reading_cb(orientation,
-                                          on_new_orientation_event,
-                                          NULL);
+    }
 
-    ua_sensors_gyroscope_set_reading_cb(gyroscope,
-                                        on_new_gyroscope_event,
-                                        NULL);
+    if(orientation != NULL) {
+        ua_sensors_orientation_set_reading_cb(orientation,
+                                              on_new_orientation_event,
+                                              NULL);
+        ua_sensors_orientation_enable(orientation);
+    } else {
+        printf("WARN: orientation could not be allocated!\n");
 
-    ua_sensors_magnetic_set_reading_cb(magnetic,
-                                       on_new_magnetic_event,
-                                       NULL);
+    }
 
-    ua_sensors_accelerometer_enable(accelerometer);
-    ua_sensors_proximity_enable(proximity);
-    ua_sensors_light_enable(ambientlight);
-    ua_sensors_orientation_enable(orientation);
-    ua_sensors_gyroscope_enable(gyroscope);
-    ua_sensors_magnetic_enable(magnetic);
+    if(gyroscope != NULL) {
+        ua_sensors_gyroscope_set_reading_cb(gyroscope,
+                                            on_new_gyroscope_event,
+                                            NULL);
+        ua_sensors_gyroscope_enable(gyroscope);
+    } else {
+        printf("WARN: gyroscope could not be allocated!\n");
+
+    }
+
+    if(magnetic != NULL) {
+        ua_sensors_magnetic_set_reading_cb(magnetic,
+                                           on_new_magnetic_event,
+                                           NULL);
+        ua_sensors_magnetic_enable(magnetic);
+    } else {
+        printf("WARN: magnetometer could not be allocated!\n");
+
+    }
+
+    if(temperature != NULL) {
+        ua_sensors_temperature_set_reading_cb(temperature,
+                                           on_new_temperature_event,
+                                           NULL);
+        ua_sensors_temperature_enable(temperature);
+    } else {
+        printf("WARN: temperature could not be allocated!\n");
+
+    }
+
+    if(pressure != NULL) {
+        ua_sensors_pressure_set_reading_cb(pressure,
+                                           on_new_pressure_event,
+                                           NULL);
+        ua_sensors_pressure_enable(pressure);
+    } else {
+        printf("WARN: pressure could not be allocated!\n");
+
+    }
 
     while(true)
     {
