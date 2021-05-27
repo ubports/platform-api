@@ -1,2 +1,4 @@
 add_subdirectory(application)
-add_subdirectory(hardware)
+if(Hybris)
+  add_subdirectory(hardware)
+endif()

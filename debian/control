@@ -4,8 +4,10 @@ Section: devel
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Build-Depends: android-headers,
                cmake,
+               cmake-extras,
                debhelper (>= 9),
                doxygen,
+               google-mock,
                graphviz,
                libgles2-mesa-dev,
                libhybris-common-dev,
