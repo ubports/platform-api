@@ -27,6 +27,8 @@
 #include <ubuntu/application/sensors/light.h>
 #include <ubuntu/application/sensors/orientation.h>
 #include <ubuntu/application/sensors/haptic.h>
+#include <ubuntu/application/sensors/gyroscope.h>
+#include <ubuntu/application/sensors/magnetic.h>
 
 #include <cstddef>
 #include <cstdlib>
@@ -862,6 +864,217 @@ UStatus uas_orientation_event_get_roll(UASOrientationEvent*, float* value)
         return U_STATUS_ERROR;
 
     *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+
+/***************************************
+ *
+ * Gyroscope API
+ *
+ ***************************************/
+
+UASensorsGyroscope* ua_sensors_gyroscope_new()
+{
+    return SensorController::instance().get(ubuntu_sensor_type_gyroscope);
+}
+
+UStatus ua_sensors_gyroscope_enable(UASensorsGyroscope* s)
+{
+    static_cast<TestSensor*>(s)->enabled = true;
+    return (UStatus) 0;
+}
+
+UStatus ua_sensors_gyroscope_disable(UASensorsGyroscope* s)
+{
+    static_cast<TestSensor*>(s)->enabled = true;
+    return (UStatus) 0;}
+
+uint32_t ua_sensors_gyroscope_get_min_delay(UASensorsGyroscope* s)
+{
+    return static_cast<TestSensor*>(s)->min_delay;
+}
+
+UStatus ua_sensors_gyroscope_get_min_value(UASensorsGyroscope* s, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = static_cast<TestSensor*>(s)->min_value;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_gyroscope_get_max_value(UASensorsGyroscope* s, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = static_cast<TestSensor*>(s)->max_value;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_gyroscope_get_resolution(UASensorsGyroscope* s, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = static_cast<TestSensor*>(s)->resolution;
+
+    return U_STATUS_SUCCESS;
+}
+
+void ua_sensors_gyroscope_set_reading_cb(UASensorsGyroscope* s, on_gyroscope_event_cb cb, void *ctx)
+{
+    TestSensor* sensor = static_cast<TestSensor*>(s);
+    sensor->on_event_cb = cb;
+    sensor->event_cb_context = ctx;
+}
+
+UStatus ua_sensors_gyroscope_set_event_rate(UASensorsGyroscope*, uint32_t)
+{
+    return U_STATUS_SUCCESS;
+}
+
+// Gyroscope Sensor Event
+uint64_t uas_gyroscope_event_get_timestamp(UASGyroscopeEvent*)
+{
+    return 0;
+}
+
+UStatus uas_gyroscope_event_get_rate_of_rotation_around_x(UASGyroscopeEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus uas_gyroscope_event_get_rate_of_rotation_around_y(UASGyroscopeEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus uas_gyroscope_event_get_rate_of_rotation_around_z(UASGyroscopeEvent*, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = 0.f;
+
+    return U_STATUS_SUCCESS;
+}
+
+/***************************************
+ *
+ * Magnetic Field sensor API
+ *
+ ***************************************/
+
+UASensorsMagnetic* ua_sensors_magnetic_new()
+{
+    return SensorController::instance().get(ubuntu_sensor_type_magnetic_field);
+}
+
+UStatus ua_sensors_magnetic_enable(UASensorsMagnetic* s)
+{
+    static_cast<TestSensor*>(s)->enabled = true;
+    return (UStatus) 0;
+}
+
+UStatus ua_sensors_magnetic_disable(UASensorsMagnetic* s)
+{
+    static_cast<TestSensor*>(s)->enabled = false;
+    return (UStatus) 0;
+}
+
+uint32_t ua_sensors_magnetic_get_min_delay(UASensorsMagnetic* s)
+{
+    return static_cast<TestSensor*>(s)->min_delay;
+}
+
+UStatus ua_sensors_magnetic_get_min_value(UASensorsMagnetic* s, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = static_cast<TestSensor*>(s)->min_value;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_magnetic_get_max_value(UASensorsMagnetic* s, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = static_cast<TestSensor*>(s)->max_value;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_magnetic_get_resolution(UASensorsMagnetic* s, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = static_cast<TestSensor*>(s)->resolution;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus ua_sensors_magnetic_set_event_rate(UASensorsMagnetic* s, uint32_t rate)
+{
+    return U_STATUS_SUCCESS;
+}
+
+void ua_sensors_magnetic_set_reading_cb(UASensorsMagnetic* s, on_magnetic_event_cb cb, void* ctx)
+{
+    TestSensor* sensor = static_cast<TestSensor*>(s);
+    sensor->on_event_cb = cb;
+    sensor->event_cb_context = ctx;
+}
+
+uint64_t uas_magnetic_event_get_timestamp(UASAccelerometerEvent* e)
+{
+    return static_cast<TestSensor*>(e)->timestamp;
+}
+
+UStatus uas_magnetic_event_get_magnetic_field_x(UASAccelerometerEvent* e, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = static_cast<TestSensor*>(e)->x;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus uas_magnetic_event_get_magnetic_field_y(UASAccelerometerEvent* e, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = static_cast<TestSensor*>(e)->y;
+
+    return U_STATUS_SUCCESS;
+}
+
+UStatus uas_magnetic_event_get_magnetic_field_z(UASAccelerometerEvent* e, float* value)
+{
+    if (!value)
+        return U_STATUS_ERROR;
+
+    *value = static_cast<TestSensor*>(e)->z;
 
     return U_STATUS_SUCCESS;
 }
