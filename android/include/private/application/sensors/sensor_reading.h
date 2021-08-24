@@ -65,6 +65,7 @@ struct SensorReading : public ubuntu::platform::ReferenceCountedBase
         Vector<3> vector; ///< Arbitrary vector, orientation and linear acceleration readings are reported here.
         Vector<3> acceleration; ///< Acceleration vector containing acceleration readings for the three axis.
         Vector<3> magnetic; ///< Readings from magnetometer, in three dimensions.
+        Vector<3> gyroscopic; ///< Readings from the gyroscope, rate of rotation in three dimensions.
         float temperature; ///< Ambient temperature.
         float distance; ///< Discrete distance, everything > 5 is considered far, everything < 5 is considered near.
         float light; ///< Ambient light conditions.

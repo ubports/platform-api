@@ -28,6 +28,10 @@
 #include <ubuntu/application/sensors/light.h>
 #include <ubuntu/application/sensors/orientation.h>
 #include <ubuntu/application/sensors/haptic.h>
+#include <ubuntu/application/sensors/gyroscope.h>
+#include <ubuntu/application/sensors/magnetic.h>
+#include <ubuntu/application/sensors/temperature.h>
+#include <ubuntu/application/sensors/pressure.h>
 
 #include <ubuntu/application/location/service.h>
 #include <ubuntu/application/location/heading_update.h>
@@ -151,6 +155,71 @@ IMPLEMENT_FUNCTION1(sensors, uint64_t, uas_orientation_event_get_timestamp, UASO
 IMPLEMENT_FUNCTION2(sensors, UStatus, uas_orientation_event_get_azimuth, UASOrientationEvent*, float*);
 IMPLEMENT_FUNCTION2(sensors, UStatus, uas_orientation_event_get_pitch, UASOrientationEvent*, float*);
 IMPLEMENT_FUNCTION2(sensors, UStatus, uas_orientation_event_get_roll, UASOrientationEvent*, float*);
+
+// Gyroscope Sensor Event
+IMPLEMENT_CTOR0(sensors, UASensorsGyroscope*, ua_sensors_gyroscope_new);
+IMPLEMENT_FUNCTION1(sensors, UStatus, ua_sensors_gyroscope_enable, UASensorsGyroscope*);
+IMPLEMENT_FUNCTION1(sensors, UStatus, ua_sensors_gyroscope_disable, UASensorsGyroscope*);
+IMPLEMENT_FUNCTION1(sensors, uint32_t, ua_sensors_gyroscope_get_min_delay, UASensorsGyroscope*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_gyroscope_get_min_value, UASensorsGyroscope*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_gyroscope_get_max_value, UASensorsGyroscope*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_gyroscope_get_resolution, UASensorsGyroscope*, float*);
+IMPLEMENT_VOID_FUNCTION3(sensors, ua_sensors_gyroscope_set_reading_cb, UASensorsGyroscope*, on_gyroscope_event_cb, void*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_gyroscope_set_event_rate, UASensorsGyroscope*, uint32_t);
+
+// Gyroscope Sensor Event
+IMPLEMENT_FUNCTION1(sensors, uint64_t, uas_gyroscope_event_get_timestamp, UASGyroscopeEvent*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, uas_gyroscope_event_get_rate_of_rotation_around_x, UASGyroscopeEvent*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, uas_gyroscope_event_get_rate_of_rotation_around_y, UASGyroscopeEvent*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, uas_gyroscope_event_get_rate_of_rotation_around_z, UASGyroscopeEvent*, float*);
+
+// Magnetic Field Sensor
+IMPLEMENT_CTOR0(sensors, UASensorsMagnetic*, ua_sensors_magnetic_new);
+IMPLEMENT_FUNCTION1(sensors, UStatus, ua_sensors_magnetic_enable, UASensorsMagnetic*);
+IMPLEMENT_FUNCTION1(sensors, UStatus, ua_sensors_magnetic_disable, UASensorsMagnetic*);
+IMPLEMENT_FUNCTION1(sensors, uint32_t, ua_sensors_magnetic_get_min_delay, UASensorsMagnetic*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_magnetic_get_min_value, UASensorsMagnetic*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_magnetic_get_max_value, UASensorsMagnetic*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_magnetic_get_resolution, UASensorsMagnetic*, float*);
+IMPLEMENT_VOID_FUNCTION3(sensors, ua_sensors_magnetic_set_reading_cb, UASensorsMagnetic*, on_magnetic_event_cb, void*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_magnetic_set_event_rate, UASensorsMagnetic*, uint32_t);
+
+// Magnetic Field Sensor Event
+IMPLEMENT_FUNCTION1(sensors, uint64_t, uas_magnetic_event_get_timestamp, UASMagneticEvent*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, uas_magnetic_event_get_magnetic_field_x, UASMagneticEvent*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, uas_magnetic_event_get_magnetic_field_y, UASMagneticEvent*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, uas_magnetic_event_get_magnetic_field_z, UASMagneticEvent*, float*);
+
+// Ambient Temperature Sensor
+IMPLEMENT_CTOR0(sensors, UASensorsTemperature*, ua_sensors_temperature_new);
+IMPLEMENT_FUNCTION1(sensors, UStatus, ua_sensors_temperature_enable, UASensorsTemperature*);
+IMPLEMENT_FUNCTION1(sensors, UStatus, ua_sensors_temperature_disable, UASensorsTemperature*);
+IMPLEMENT_FUNCTION1(sensors, uint32_t, ua_sensors_temperature_get_min_delay, UASensorsTemperature*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_temperature_get_min_value, UASensorsTemperature*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_temperature_get_max_value, UASensorsTemperature*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_temperature_get_resolution, UASensorsTemperature*, float*);
+IMPLEMENT_VOID_FUNCTION3(sensors, ua_sensors_temperature_set_reading_cb, UASensorsTemperature*, on_temperature_event_cb, void*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_temperature_set_event_rate, UASensorsTemperature*, uint32_t);
+
+// Ambient Temperature Sensor Event
+IMPLEMENT_FUNCTION1(sensors, uint64_t, uas_temperature_event_get_timestamp, UASTemperatureEvent*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, uas_temperature_event_get_temperature, UASTemperatureEvent*, float*);
+
+// Ambient Pressure Sensor
+IMPLEMENT_CTOR0(sensors, UASensorsPressure*, ua_sensors_pressure_new);
+IMPLEMENT_FUNCTION1(sensors, UStatus, ua_sensors_pressure_enable, UASensorsPressure*);
+IMPLEMENT_FUNCTION1(sensors, UStatus, ua_sensors_pressure_disable, UASensorsPressure*);
+IMPLEMENT_FUNCTION1(sensors, uint32_t, ua_sensors_pressure_get_min_delay, UASensorsPressure*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_pressure_get_min_value, UASensorsPressure*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_pressure_get_max_value, UASensorsPressure*, float*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_pressure_get_resolution, UASensorsPressure*, float*);
+IMPLEMENT_VOID_FUNCTION3(sensors, ua_sensors_pressure_set_reading_cb, UASensorsPressure*, on_pressure_event_cb, void*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, ua_sensors_pressure_set_event_rate, UASensorsPressure*, uint32_t);
+
+// Ambient Pressure Sensor Event
+IMPLEMENT_FUNCTION1(sensors, uint64_t, uas_pressure_event_get_timestamp, UASPressureEvent*);
+IMPLEMENT_FUNCTION2(sensors, UStatus, uas_pressure_event_get_pressure, UASPressureEvent*, float*);
+
 
 // Location
 

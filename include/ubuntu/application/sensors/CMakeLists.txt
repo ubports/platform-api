@@ -1,10 +1,14 @@
 set(
   UBUNTU_APPLICATION_SENSORS_HEADERS
   accelerometer.h
+  gyroscope.h
   light.h
+  magnetic.h
   proximity.h
   haptic.h
   orientation.h
+  temperature.h
+  pressure.h
 )
 
 install(

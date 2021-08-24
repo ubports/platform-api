@@ -51,14 +51,16 @@ static ForwardSensorTypeLut init_forward_sensor_type_lut()
 {
     static ForwardSensorTypeLut lut;
 
-    lut.add(sensor_type_accelerometer, ASENSOR_TYPE_ACCELEROMETER);
-    lut.add(sensor_type_magnetic_field, ASENSOR_TYPE_MAGNETIC_FIELD);
-    lut.add(sensor_type_gyroscope, ASENSOR_TYPE_GYROSCOPE);
-    lut.add(sensor_type_light, ASENSOR_TYPE_LIGHT);
-    lut.add(sensor_type_proximity, ASENSOR_TYPE_PROXIMITY);
+    lut.add(sensor_type_accelerometer, SENSOR_TYPE_ACCELEROMETER);
+    lut.add(sensor_type_magnetic_field, SENSOR_TYPE_MAGNETIC_FIELD);
+    lut.add(sensor_type_gyroscope, SENSOR_TYPE_GYROSCOPE);
+    lut.add(sensor_type_light, SENSOR_TYPE_LIGHT);
+    lut.add(sensor_type_proximity, SENSOR_TYPE_PROXIMITY);
     lut.add(sensor_type_orientation, SENSOR_TYPE_ORIENTATION);
     lut.add(sensor_type_linear_acceleration, SENSOR_TYPE_LINEAR_ACCELERATION);
     lut.add(sensor_type_rotation_vector, SENSOR_TYPE_ROTATION_VECTOR);
+    lut.add(sensor_type_pressure, SENSOR_TYPE_PRESSURE);
+    lut.add(sensor_type_temperature, SENSOR_TYPE_AMBIENT_TEMPERATURE);
     return lut;
 }
 
@@ -66,14 +68,17 @@ static BackwardSensorTypeLut init_backward_sensor_type_lut()
 {
     static BackwardSensorTypeLut lut;
 
-    lut.add(ASENSOR_TYPE_ACCELEROMETER, sensor_type_accelerometer);
-    lut.add(ASENSOR_TYPE_MAGNETIC_FIELD, sensor_type_magnetic_field);
-    lut.add(ASENSOR_TYPE_GYROSCOPE, sensor_type_gyroscope);
-    lut.add(ASENSOR_TYPE_LIGHT, sensor_type_light);
-    lut.add(ASENSOR_TYPE_PROXIMITY, sensor_type_proximity);
+    lut.add(SENSOR_TYPE_ACCELEROMETER, sensor_type_accelerometer);
+    lut.add(SENSOR_TYPE_MAGNETIC_FIELD, sensor_type_magnetic_field);
+    lut.add(SENSOR_TYPE_GYROSCOPE, sensor_type_gyroscope);
+    lut.add(SENSOR_TYPE_LIGHT, sensor_type_light);
+    lut.add(SENSOR_TYPE_PROXIMITY, sensor_type_proximity);
     lut.add(SENSOR_TYPE_ORIENTATION, sensor_type_orientation);
     lut.add(SENSOR_TYPE_LINEAR_ACCELERATION, sensor_type_linear_acceleration);
     lut.add(SENSOR_TYPE_ROTATION_VECTOR, sensor_type_rotation_vector);
+    lut.add(SENSOR_TYPE_PRESSURE, sensor_type_pressure);
+    lut.add(SENSOR_TYPE_AMBIENT_TEMPERATURE, sensor_type_temperature);
+
     return lut;
 }
 
@@ -226,28 +231,27 @@ struct SensorService : public ubuntu::application::sensors::SensorService
         reading->timestamp = event.timestamp;
         switch (event.type)
         {
-        case ASENSOR_TYPE_ACCELEROMETER:
+        case SENSOR_TYPE_ACCELEROMETER:
             memcpy(
                 reading->acceleration.v,
                 event.acceleration.v,
                 sizeof(reading->acceleration.v));
             break;
-        case ASENSOR_TYPE_MAGNETIC_FIELD:
+        case SENSOR_TYPE_MAGNETIC_FIELD:
             memcpy(
                 reading->magnetic.v,
                 event.magnetic.v,
                 sizeof(reading->magnetic.v));
             break;
-        case ASENSOR_TYPE_GYROSCOPE:
-            memcpy(
-                reading->acceleration.v,
-                event.acceleration.v,
-                sizeof(reading->acceleration.v));
+        case SENSOR_TYPE_GYROSCOPE:
+                reading->gyroscopic.v[0] = event.data[0];
+                reading->gyroscopic.v[1] = event.data[1];
+                reading->gyroscopic.v[2] = event.data[2];
             break;
-        case ASENSOR_TYPE_LIGHT:
+        case SENSOR_TYPE_LIGHT:
             reading->light = event.light;
             break;
-        case ASENSOR_TYPE_PROXIMITY:
+        case SENSOR_TYPE_PROXIMITY:
             reading->distance = event.distance;
             break;
         case SENSOR_TYPE_ORIENTATION:
@@ -265,6 +269,12 @@ struct SensorService : public ubuntu::application::sensors::SensorService
             reading->vector.v[0] = event.data[0];
             reading->vector.v[1] = event.data[1];
             reading->vector.v[2] = event.data[2];
+            break;
+        case SENSOR_TYPE_PRESSURE:
+            reading->pressure = event.pressure;
+            break;
+        case SENSOR_TYPE_AMBIENT_TEMPERATURE:
+            reading->temperature = event.temperature;
             break;
         }
 
